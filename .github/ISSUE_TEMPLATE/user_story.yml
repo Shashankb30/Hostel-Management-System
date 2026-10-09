@@ -1,0 +1,55 @@
+name: User Story
+description: Propose a new user story for Hostel Management System
+title: "[STORY]: "
+labels: ["story"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide details for the user story.
+  - type: textarea
+    id: user_story
+    attributes:
+      label: User Story
+      description: In the format: As a [role], I want [feature] so that [benefit].
+      placeholder: As a Student, I want to submit a leave application so that the Warden can approve my absence.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: List testable criteria that must be satisfied.
+      value: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+    validations:
+      required: true
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      options:
+        - "module:login"
+        - "module:student"
+        - "module:room"
+        - "module:allocation"
+        - "module:fee"
+        - "module:complaint"
+        - "module:attendance"
+        - "module:visitor"
+        - "module:leave"
+        - "module:notice"
+        - "module:crosscut"
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - "P0-critical"
+        - "P1-high"
+        - "P2-normal"
+    validations:
+      required: true

@@ -1,0 +1,32 @@
+name: PR Automation & Quality Gate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  pr-check:
+    name: Verify PR Traceability & Description
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: read
+      contents: read
+
+    steps:
+      - name: Validate PR Description & Issue Linking
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prBody = context.payload.pull_request.body || '';
+            const prTitle = context.payload.pull_request.title || '';
+            
+            // Check for Fixes #... or Closes #... or Resolves #...
+            const issueLinkRegex = /(?:fixes|closes|resolves)\s+#\d+/i;
+            const hasIssueLink = issueLinkRegex.test(prBody) || issueLinkRegex.test(prTitle);
+            
+            if (!hasIssueLink) {
+              core.setFailed('❌ PR Description missing issue linking! Please include "Fixes #<issue_number>" in the PR description or title to maintain traceability.');
+            } else {
+              console.log('✅ Valid issue linking found.');
+            }

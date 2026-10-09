@@ -10,7 +10,7 @@ N=0; LAST=0
 run() { if [[ "$DRY" == "1" ]]; then echo "[dry-run] $*"; else "$@"; fi; }
 
 label() { run gh label create "$1" --color "$2" --description "$3" --repo "$REPO" --force >/dev/null; }
-milestone() { run gh api -X POST "repos/$REPO/milestones" -f title="$1" -f description="$2" >/dev/null 2>&1 || echo "milestone exists: $1"; }
+milestone() { run gh api -X POST "repos/$REPO/milestones" -f title="$1" -f description="$2" ${3:+-f due_on="$3"} >/dev/null 2>&1 || echo "milestone exists: $1"; }
 
 # issue TITLE LABELS MILESTONE BODY [PARENT_NUMBER]  -> sets LAST to the new issue number
 issue() {
@@ -58,16 +58,19 @@ label 'module:setup' 006B75 'Module: setup'
 label 'module:student' 006B75 'Module: student'
 label 'module:visitor' 006B75 'Module: visitor'
 
+echo '== Story Point Labels =='
+label 'SP: 1' D4C5F9 'Story points: 1 (Small)'
+label 'SP: 2' BFD4F2 'Story points: 2 (Minor feature/task)'
+label 'SP: 3' 7FBBB3 'Story points: 3 (Standard story/task)'
+label 'SP: 5' E69875 'Story points: 5 (Complex story/spike)'
+label 'SP: 8' DB7093 'Story points: 8 (Epic/Architecture)'
+
 echo '== Milestones =='
-milestone 'Sprint 1 - Foundation & Login' 'HMS sprint'
-milestone 'Sprint 2 - Students & Rooms' 'HMS sprint'
-milestone 'Sprint 3 - Allocation & Fees' 'HMS sprint'
-milestone 'Sprint 4 - Discipline & Attendance' 'HMS sprint'
-milestone 'Sprint 5 - Visitors, Leave & Notices' 'HMS sprint'
-milestone 'Sprint 6 - Hardening & Release' 'HMS sprint'
+milestone 'Sprint-1 [19th Oct to 23rd Oct]' 'Sprint 1: Foundation, Setup, Authentication (FR-01), Student Registration (FR-02), Room Management (FR-03), Room Allocation (FR-04), Fee Management (FR-05)' '2026-10-23T23:59:59Z'
+milestone 'Sprint-2 [26th Oct to 30th Oct]' 'Sprint 2: Complaints & Misconduct (FR-06), Attendance (FR-07), Visitors (FR-08), Leave Applications (FR-09), Notices (FR-10), NFR Verification, QA Automation, Documentation' '2026-10-30T23:59:59Z'
 
 echo '== Project Foundation & DevOps =='
-issue '[EPIC] SETUP - Project Foundation & DevOps' 'epic,module:setup' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[EPIC] SETUP - Project Foundation & DevOps' 'epic,module:setup' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **Epic:** Project Foundation & DevOps
 
 Repository, GitHub Project board automation, architecture, database, CI, app shell and shared services that every functional module depends on.
@@ -81,7 +84,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[SETUP.01] Create GitHub repository with README, .gitignore and branch protection' 'task,module:setup,P0-critical' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.01] Create GitHub repository with README, .gitignore and branch protection' 'task,module:setup,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want a repository with protected `main` so that all work flows through pull requests.
 
 **Acceptance criteria**
@@ -100,7 +103,7 @@ issue '[SETUP.01] Create GitHub repository with README, .gitignore and branch pr
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.02] Add issue templates and PR template that requires a `Fixes #<issue>` keyword' 'task,module:setup,P0-critical' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.02] Add issue templates and PR template that requires a `Fixes #<issue>` keyword' 'task,module:setup,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want issue/PR templates so that every PR is traceable to a backlog item.
 
 **Acceptance criteria**
@@ -119,7 +122,7 @@ issue '[SETUP.02] Add issue templates and PR template that requires a `Fixes #<i
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.03] Create the '\''Sprint Board'\'' GitHub Project (v2) with Todo / In Progress / In Review / Done' 'task,module:setup,P0-critical' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.03] Create the '\''Sprint Board'\'' GitHub Project (v2) with Todo / In Progress / In Review / Done' 'task,module:setup,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want a project board linked to the repository so that work status is visible.
 
 **Acceptance criteria**
@@ -138,7 +141,7 @@ issue '[SETUP.03] Create the '\''Sprint Board'\'' GitHub Project (v2) with Todo 
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.04] Enable GitHub Project workflows (auto-add, default status, PR linking, merge, auto-close)' 'task,module:setup,P0-critical' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.04] Enable GitHub Project workflows (auto-add, default status, PR linking, merge, auto-close)' 'task,module:setup,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want board automation so that status follows real git activity.
 
 **Acceptance criteria**
@@ -160,7 +163,7 @@ issue '[SETUP.04] Enable GitHub Project workflows (auto-add, default status, PR 
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.05] Define labels, sprint milestones and Definition of Done' 'task,module:setup,P1-high' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.05] Define labels, sprint milestones and Definition of Done' 'task,module:setup,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want a shared label set, milestones and DoD so that backlog grooming is consistent.
 
 **Acceptance criteria**
@@ -179,7 +182,7 @@ issue '[SETUP.05] Define labels, sprint milestones and Definition of Done' 'task
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.06] Spike: choose tech stack and high-level architecture' 'task,module:setup,P0-critical' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.06] Spike: choose tech stack and high-level architecture' 'task,module:setup,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want an agreed stack and layered/modular architecture so that modules stay independent.
 
 **Acceptance criteria**
@@ -198,7 +201,7 @@ issue '[SETUP.06] Spike: choose tech stack and high-level architecture' 'task,mo
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.07] Design ER diagram and relational schema' 'task,module:setup,P0-critical' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.07] Design ER diagram and relational schema' 'task,module:setup,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want a data model covering all modules so that integrity rules can be enforced.
 
 **Acceptance criteria**
@@ -217,7 +220,7 @@ issue '[SETUP.07] Design ER diagram and relational schema' 'task,module:setup,P0
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.08] Implement database schema and migrations' 'task,module:setup,P0-critical' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.08] Implement database schema and migrations' 'task,module:setup,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want a versioned schema so that every environment is reproducible.
 
 **Acceptance criteria**
@@ -235,7 +238,7 @@ issue '[SETUP.08] Implement database schema and migrations' 'task,module:setup,P
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.09] Create seed / test-data script matching the Test Plan data' 'task,module:setup,P1-high' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.09] Create seed / test-data script matching the Test Plan data' 'task,module:setup,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want repeatable seed data so that Test Plan cases can be executed as written.
 
 **Acceptance criteria**
@@ -254,7 +257,7 @@ issue '[SETUP.09] Create seed / test-data script matching the Test Plan data' 't
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.10] Set up CI pipeline (build, lint, run tests on every PR)' 'task,module:setup,P1-high' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.10] Set up CI pipeline (build, lint, run tests on every PR)' 'task,module:setup,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want automatic checks on PRs so that broken code is not merged.
 
 **Acceptance criteria**
@@ -272,7 +275,7 @@ issue '[SETUP.10] Set up CI pipeline (build, lint, run tests on every PR)' 'task
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.11] Build application shell: layout, navigation and role-based menus' 'task,module:setup,P0-critical' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.11] Build application shell: layout, navigation and role-based menus' 'task,module:setup,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want a common layout with menus that depend on the user's role so that modules plug in easily.
 
 **Acceptance criteria**
@@ -291,7 +294,7 @@ issue '[SETUP.11] Build application shell: layout, navigation and role-based men
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.12] Create shared validation and error-message framework' 'task,module:setup,P1-high' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.12] Create shared validation and error-message framework' 'task,module:setup,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want consistent validation and messages so that modules report errors the same way.
 
 **Acceptance criteria**
@@ -309,7 +312,7 @@ issue '[SETUP.12] Create shared validation and error-message framework' 'task,mo
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[SETUP.13] Create in-app notification service' 'task,module:setup,P1-high' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[SETUP.13] Create in-app notification service' 'task,module:setup,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want a notification service so that students are told about allocations, complaints and leave decisions.
 
 **Acceptance criteria**
@@ -330,7 +333,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== User Login =='
-issue '[EPIC] FR-01 - User Login' 'epic,module:login' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[EPIC] FR-01 - User Login' 'epic,module:login' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **Epic:** User Login
 
 Secure login with unique credentials and role-based access control; redirects each role to its own dashboard.
@@ -344,7 +347,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[FR-01.01] Display login page with username and password fields' 'story,module:login,P0-critical' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[FR-01.01] Display login page with username and password fields' 'story,module:login,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **user**, I want to see a login page with Username, Password and Submit.
 
 **Acceptance criteria**
@@ -363,7 +366,7 @@ issue '[FR-01.01] Display login page with username and password fields' 'story,m
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-01.02] Authenticate valid Student credentials' 'story,module:login,P0-critical,role:student' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[FR-01.02] Authenticate valid Student credentials' 'story,module:login,P0-critical,role:student' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want to log in with my credentials so that I reach my dashboard.
 
 **Acceptance criteria**
@@ -382,7 +385,7 @@ issue '[FR-01.02] Authenticate valid Student credentials' 'story,module:login,P0
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-01.03] Reject invalid credentials with an error message' 'story,module:login,P0-critical' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[FR-01.03] Reject invalid credentials with an error message' 'story,module:login,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **user**, I want a clear error on wrong credentials so that I can retry.
 
 **Acceptance criteria**
@@ -401,7 +404,7 @@ issue '[FR-01.03] Reject invalid credentials with an error message' 'story,modul
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-01.04] Role-based redirection to Warden and Administrator dashboards' 'story,module:login,P0-critical,role:warden' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[FR-01.04] Role-based redirection to Warden and Administrator dashboards' 'story,module:login,P0-critical,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to be redirected to a dashboard with menus for my role.
 
 **Acceptance criteria**
@@ -420,7 +423,7 @@ issue '[FR-01.04] Role-based redirection to Warden and Administrator dashboards'
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-01.05] Block login for inactive or locked accounts' 'story,module:login,P0-critical' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[FR-01.05] Block login for inactive or locked accounts' 'story,module:login,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall deny access to inactive or locked accounts so that only active users get in.
 
 **Acceptance criteria**
@@ -439,7 +442,7 @@ issue '[FR-01.05] Block login for inactive or locked accounts' 'story,module:log
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-01.06] Validate empty credentials before authenticating' 'story,module:login,P1-high' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[FR-01.06] Validate empty credentials before authenticating' 'story,module:login,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **user**, I want validation on blank fields so that I don't submit an empty form.
 
 **Acceptance criteria**
@@ -457,7 +460,7 @@ issue '[FR-01.06] Validate empty credentials before authenticating' 'story,modul
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-01.07] Maintain session across module navigation' 'story,module:login,P0-critical,role:student' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[FR-01.07] Maintain session across module navigation' 'story,module:login,P0-critical,role:student' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want to stay logged in while moving between modules.
 
 **Acceptance criteria**
@@ -475,7 +478,7 @@ issue '[FR-01.07] Maintain session across module navigation' 'story,module:login
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-01.08] Logout' 'story,module:login,P1-high,inferred' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[FR-01.08] Logout' 'story,module:login,P1-high,inferred' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **user**, I want to log out so that my session is closed safely.
 
 **Acceptance criteria**
@@ -494,7 +497,7 @@ issue '[FR-01.08] Logout' 'story,module:login,P1-high,inferred' 'Sprint 1 - Foun
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-01.09] Forgot password / password reset flow' 'story,module:login,P1-high' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[FR-01.09] Forgot password / password reset flow' 'story,module:login,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **user**, I want to reset a forgotten password so that I can regain access.
 
 **Acceptance criteria**
@@ -513,7 +516,7 @@ issue '[FR-01.09] Forgot password / password reset flow' 'story,module:login,P1-
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-01.10] Administrator manages user accounts and roles' 'story,module:login,P1-high,role:admin,inferred' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[FR-01.10] Administrator manages user accounts and roles' 'story,module:login,P1-high,role:admin,inferred' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to create, deactivate and reactivate user accounts and assign roles.
 
 **Acceptance criteria**
@@ -533,7 +536,7 @@ issue '[FR-01.10] Administrator manages user accounts and roles' 'story,module:l
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-01.11] Lock account after repeated failed logins' 'story,module:login,P2-normal,inferred' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[FR-01.11] Lock account after repeated failed logins' 'story,module:login,P2-normal,inferred' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall lock an account after repeated failed logins so that brute-force attempts are limited.
 
 **Acceptance criteria**
@@ -555,7 +558,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Student Registration =='
-issue '[EPIC] FR-02 - Student Registration' 'epic,module:student' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[EPIC] FR-02 - Student Registration' 'epic,module:student' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **Epic:** Student Registration
 
 Administrator adds, updates and maintains student personal, academic and contact details.
@@ -569,7 +572,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[FR-02.01] Add New Student form shows all required fields' 'story,module:student,P0-critical,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-02.01] Add New Student form shows all required fields' 'story,module:student,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want an Add Student form so that I can capture student details.
 
 **Acceptance criteria**
@@ -587,7 +590,7 @@ issue '[FR-02.01] Add New Student form shows all required fields' 'story,module:
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-02.02] Register student with valid data and generate unique Student ID' 'story,module:student,P0-critical,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-02.02] Register student with valid data and generate unique Student ID' 'story,module:student,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to save a valid student so that a record and unique ID are created.
 
 **Acceptance criteria**
@@ -606,7 +609,7 @@ issue '[FR-02.02] Register student with valid data and generate unique Student I
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-02.03] Reject duplicate Roll Number / Student ID / email' 'story,module:student,P0-critical,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-02.03] Reject duplicate Roll Number / Student ID / email' 'story,module:student,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want duplicates to be blocked so that no student is recorded twice.
 
 **Acceptance criteria**
@@ -625,7 +628,7 @@ issue '[FR-02.03] Reject duplicate Roll Number / Student ID / email' 'story,modu
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-02.04] Validate mandatory fields on registration' 'story,module:student,P0-critical,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-02.04] Validate mandatory fields on registration' 'story,module:student,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want required fields to be enforced so that incomplete records are not saved.
 
 **Acceptance criteria**
@@ -643,7 +646,7 @@ issue '[FR-02.04] Validate mandatory fields on registration' 'story,module:stude
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-02.05] Validate contact number format' 'story,module:student,P1-high,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-02.05] Validate contact number format' 'story,module:student,P1-high,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want phone validation so that only valid contact numbers are stored.
 
 **Acceptance criteria**
@@ -661,7 +664,7 @@ issue '[FR-02.05] Validate contact number format' 'story,module:student,P1-high,
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-02.06] Update an existing student'\''s details' 'story,module:student,P0-critical,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-02.06] Update an existing student'\''s details' 'story,module:student,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to search a student and edit details such as phone so that records stay current.
 
 **Acceptance criteria**
@@ -680,7 +683,7 @@ issue '[FR-02.06] Update an existing student'\''s details' 'story,module:student
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-02.07] Search and filter students by name' 'story,module:student,P1-high,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-02.07] Search and filter students by name' 'story,module:student,P1-high,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to search by name so that I find records quickly.
 
 **Acceptance criteria**
@@ -698,7 +701,7 @@ issue '[FR-02.07] Search and filter students by name' 'story,module:student,P1-h
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-02.08] Make newly registered students eligible in Room Allocation' 'story,module:student,P0-critical,role:warden' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-02.08] Make newly registered students eligible in Room Allocation' 'story,module:student,P0-critical,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want new students without a room to appear as candidates so that I can allocate them.
 
 **Acceptance criteria**
@@ -715,7 +718,7 @@ issue '[FR-02.08] Make newly registered students eligible in Room Allocation' 's
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-02.09] Student profile page (room, fees, attendance, visitors, complaints, leave)' 'story,module:student,P1-high,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-02.09] Student profile page (room, fees, attendance, visitors, complaints, leave)' 'story,module:student,P1-high,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want a single profile view so that I see everything about a student.
 
 **Acceptance criteria**
@@ -733,7 +736,7 @@ issue '[FR-02.09] Student profile page (room, fees, attendance, visitors, compla
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-02.10] Create login credentials linked to the student record' 'story,module:student,P1-high,role:admin,inferred' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-02.10] Create login credentials linked to the student record' 'story,module:student,P1-high,role:admin,inferred' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want an account created with the student so that they can log in.
 
 **Acceptance criteria**
@@ -752,7 +755,7 @@ issue '[FR-02.10] Create login credentials linked to the student record' 'story,
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-02.11] Deactivate / archive a student record' 'story,module:student,P2-normal,role:admin,inferred' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-02.11] Deactivate / archive a student record' 'story,module:student,P2-normal,role:admin,inferred' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to deactivate a student who leaves so that active lists stay accurate.
 
 **Acceptance criteria**
@@ -773,7 +776,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Room Management =='
-issue '[EPIC] FR-03 - Room Management' 'epic,module:room' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[EPIC] FR-03 - Room Management' 'epic,module:room' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **Epic:** Room Management
 
 Maintain room inventory (number, capacity, type) and keep vacancy/occupancy status up to date.
@@ -787,7 +790,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[FR-03.01] Add room with number, capacity and type' 'story,module:room,P0-critical,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.01] Add room with number, capacity and type' 'story,module:room,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to add a room so that it can be allocated.
 
 **Acceptance criteria**
@@ -805,7 +808,7 @@ issue '[FR-03.01] Add room with number, capacity and type' 'story,module:room,P0
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-03.02] Reject duplicate room number' 'story,module:room,P0-critical,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.02] Reject duplicate room number' 'story,module:room,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want duplicate room numbers to be blocked so that every room is unique.
 
 **Acceptance criteria**
@@ -823,7 +826,7 @@ issue '[FR-03.02] Reject duplicate room number' 'story,module:room,P0-critical,r
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-03.03] Validate capacity is a positive integer' 'story,module:room,P0-critical,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.03] Validate capacity is a positive integer' 'story,module:room,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want capacity validation so that rooms are meaningful.
 
 **Acceptance criteria**
@@ -841,7 +844,7 @@ issue '[FR-03.03] Validate capacity is a positive integer' 'story,module:room,P0
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-03.04] Edit room details' 'story,module:room,P1-high,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.04] Edit room details' 'story,module:room,P1-high,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to change room number, capacity and type.
 
 **Acceptance criteria**
@@ -859,7 +862,7 @@ issue '[FR-03.04] Edit room details' 'story,module:room,P1-high,role:admin' 'Spr
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-03.05] Auto-update occupancy and vacancy status' 'story,module:room,P0-critical' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.05] Auto-update occupancy and vacancy status' 'story,module:room,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall update occupancy and vacancy status automatically after allocation, transfer or vacating.
 
 **Acceptance criteria**
@@ -877,7 +880,7 @@ issue '[FR-03.05] Auto-update occupancy and vacancy status' 'story,module:room,P
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-03.06] Exclude fully occupied rooms from allocation lists' 'story,module:room,P0-critical,role:warden' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.06] Exclude fully occupied rooms from allocation lists' 'story,module:room,P0-critical,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want full rooms hidden from allocation so that I cannot pick them.
 
 **Acceptance criteria**
@@ -894,7 +897,7 @@ issue '[FR-03.06] Exclude fully occupied rooms from allocation lists' 'story,mod
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-03.07] Room detail changes reflect in the student'\''s room view' 'story,module:room,P1-high,role:student' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.07] Room detail changes reflect in the student'\''s room view' 'story,module:room,P1-high,role:student' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want to see up-to-date room information.
 
 **Acceptance criteria**
@@ -911,7 +914,7 @@ issue '[FR-03.07] Room detail changes reflect in the student'\''s room view' 'st
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-03.08] Student views own allocated room details' 'story,module:room,P1-high,role:student' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.08] Student views own allocated room details' 'story,module:room,P1-high,role:student' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want to see my room number, type and roommates' count.
 
 **Acceptance criteria**
@@ -929,7 +932,7 @@ issue '[FR-03.08] Student views own allocated room details' 'story,module:room,P
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-03.09] Filter rooms by vacancy status' 'story,module:room,P1-high,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.09] Filter rooms by vacancy status' 'story,module:room,P1-high,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to filter 'Vacant only' so that I find rooms with space.
 
 **Acceptance criteria**
@@ -946,7 +949,7 @@ issue '[FR-03.09] Filter rooms by vacancy status' 'story,module:room,P1-high,rol
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-03.10] Prevent deletion of occupied rooms; deactivate unoccupied rooms' 'story,module:room,P0-critical,role:admin' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.10] Prevent deletion of occupied rooms; deactivate unoccupied rooms' 'story,module:room,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want rooms to be removed only when nobody lives in them.
 
 **Acceptance criteria**
@@ -964,7 +967,7 @@ issue '[FR-03.10] Prevent deletion of occupied rooms; deactivate unoccupied room
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-03.11] Warden views and updates room availability' 'story,module:room,P1-high,role:warden' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.11] Warden views and updates room availability' 'story,module:room,P1-high,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to view rooms and update availability.
 
 **Acceptance criteria**
@@ -982,7 +985,7 @@ issue '[FR-03.11] Warden views and updates room availability' 'story,module:room
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-03.12] Prevent lowering capacity below current occupancy' 'story,module:room,P1-high,role:admin,inferred' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[FR-03.12] Prevent lowering capacity below current occupancy' 'story,module:room,P1-high,role:admin,inferred' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want capacity not to drop below current occupancy.
 
 **Acceptance criteria**
@@ -1002,7 +1005,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Room Allocation =='
-issue '[EPIC] FR-04 - Room Allocation' 'epic,module:allocation' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[EPIC] FR-04 - Room Allocation' 'epic,module:allocation' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **Epic:** Room Allocation
 
 Warden allocates rooms to students based on vacancy and priority rules, including transfers.
@@ -1016,7 +1019,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[FR-04.01] Show vacant rooms for a selected student' 'story,module:allocation,P0-critical,role:warden' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.01] Show vacant rooms for a selected student' 'story,module:allocation,P0-critical,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to select a student and see suggested vacant rooms.
 
 **Acceptance criteria**
@@ -1033,7 +1036,7 @@ issue '[FR-04.01] Show vacant rooms for a selected student' 'story,module:alloca
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.02] Allocate a vacant room to a student' 'story,module:allocation,P0-critical,role:warden' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.02] Allocate a vacant room to a student' 'story,module:allocation,P0-critical,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to allocate e.g. B-204 to Divya S.
 
 **Acceptance criteria**
@@ -1052,7 +1055,7 @@ issue '[FR-04.02] Allocate a vacant room to a student' 'story,module:allocation,
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.03] Define and store allocation priority rules' 'story,module:allocation,P1-high,role:warden' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.03] Define and store allocation priority rules' 'story,module:allocation,P1-high,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want priority rules (e.g. seniority, category) configurable.
 
 **Acceptance criteria**
@@ -1070,7 +1073,7 @@ issue '[FR-04.03] Define and store allocation priority rules' 'story,module:allo
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.04] Apply priority rules when allocating' 'story,module:allocation,P1-high,role:warden' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.04] Apply priority rules when allocating' 'story,module:allocation,P1-high,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want seniors prioritised over juniors.
 
 **Acceptance criteria**
@@ -1088,7 +1091,7 @@ issue '[FR-04.04] Apply priority rules when allocating' 'story,module:allocation
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.05] Maintain waitlist of unallocated students' 'story,module:allocation,P2-normal,role:warden,inferred' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.05] Maintain waitlist of unallocated students' 'story,module:allocation,P2-normal,role:warden,inferred' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want a waitlist so that requests are handled in order.
 
 **Acceptance criteria**
@@ -1107,7 +1110,7 @@ issue '[FR-04.05] Maintain waitlist of unallocated students' 'story,module:alloc
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.06] Block allocation to full/unavailable room and refresh list' 'story,module:allocation,P0-critical,role:warden' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.06] Block allocation to full/unavailable room and refresh list' 'story,module:allocation,P0-critical,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want full rooms to be blocked.
 
 **Acceptance criteria**
@@ -1125,7 +1128,7 @@ issue '[FR-04.06] Block allocation to full/unavailable room and refresh list' 's
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.07] Prevent second allocation; require transfer' 'story,module:allocation,P0-critical,role:warden' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.07] Prevent second allocation; require transfer' 'story,module:allocation,P0-critical,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want already-allocated students to need a transfer.
 
 **Acceptance criteria**
@@ -1142,7 +1145,7 @@ issue '[FR-04.07] Prevent second allocation; require transfer' 'story,module:all
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.08] Room transfer between rooms' 'story,module:allocation,P0-critical,role:warden' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.08] Room transfer between rooms' 'story,module:allocation,P0-critical,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to transfer a student between rooms.
 
 **Acceptance criteria**
@@ -1161,7 +1164,7 @@ issue '[FR-04.08] Room transfer between rooms' 'story,module:allocation,P0-criti
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.09] Notify student of allocation or transfer' 'story,module:allocation,P1-high,role:student' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.09] Notify student of allocation or transfer' 'story,module:allocation,P1-high,role:student' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want to be notified of my room.
 
 **Acceptance criteria**
@@ -1178,7 +1181,7 @@ issue '[FR-04.09] Notify student of allocation or transfer' 'story,module:alloca
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.10] Handle '\''no vacant rooms'\'' gracefully' 'story,module:allocation,P1-high,role:warden' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.10] Handle '\''no vacant rooms'\'' gracefully' 'story,module:allocation,P1-high,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want a friendly message when everything is full.
 
 **Acceptance criteria**
@@ -1195,7 +1198,7 @@ issue '[FR-04.10] Handle '\''no vacant rooms'\'' gracefully' 'story,module:alloc
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.11] Allocation history / report' 'story,module:allocation,P1-high,role:warden' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.11] Allocation history / report' 'story,module:allocation,P1-high,role:warden' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want an allocation report for a date range/semester.
 
 **Acceptance criteria**
@@ -1212,7 +1215,7 @@ issue '[FR-04.11] Allocation history / report' 'story,module:allocation,P1-high,
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.12] Prevent concurrent over-allocation of the last bed' 'story,module:allocation,P1-high,inferred' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.12] Prevent concurrent over-allocation of the last bed' 'story,module:allocation,P1-high,inferred' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall handle concurrent allocations safely so that a room's capacity is never exceeded.
 
 **Acceptance criteria**
@@ -1231,7 +1234,7 @@ issue '[FR-04.12] Prevent concurrent over-allocation of the last bed' 'story,mod
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-04.13] Vacate / release a room' 'story,module:allocation,P2-normal,role:warden,inferred' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-04.13] Vacate / release a room' 'story,module:allocation,P2-normal,role:warden,inferred' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to release a room when a student leaves.
 
 **Acceptance criteria**
@@ -1251,7 +1254,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Fee Management =='
-issue '[EPIC] FR-05 - Fee Management' 'epic,module:fee' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[EPIC] FR-05 - Fee Management' 'epic,module:fee' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **Epic:** Fee Management
 
 Record hostel fee payments and maintain payment status (Paid / Partially Paid / Due).
@@ -1265,7 +1268,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[FR-05.01] Define fee structure for a student' 'story,module:fee,P0-critical,role:admin' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.01] Define fee structure for a student' 'story,module:fee,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to set the fee structure so that balances can be computed.
 
 **Acceptance criteria**
@@ -1283,7 +1286,7 @@ issue '[FR-05.01] Define fee structure for a student' 'story,module:fee,P0-criti
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.02] View fee details: total, paid and outstanding' 'story,module:fee,P0-critical,role:admin' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.02] View fee details: total, paid and outstanding' 'story,module:fee,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to see the fee summary for a student.
 
 **Acceptance criteria**
@@ -1300,7 +1303,7 @@ issue '[FR-05.02] View fee details: total, paid and outstanding' 'story,module:f
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.03] Record full payment' 'story,module:fee,P0-critical,role:admin' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.03] Record full payment' 'story,module:fee,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to record a payment equal to the balance.
 
 **Acceptance criteria**
@@ -1319,7 +1322,7 @@ issue '[FR-05.03] Record full payment' 'story,module:fee,P0-critical,role:admin'
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.04] Record partial payment' 'story,module:fee,P0-critical,role:admin' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.04] Record partial payment' 'story,module:fee,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to record part payment.
 
 **Acceptance criteria**
@@ -1337,7 +1340,7 @@ issue '[FR-05.04] Record partial payment' 'story,module:fee,P0-critical,role:adm
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.05] Reject payment exceeding balance' 'story,module:fee,P0-critical,role:admin' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.05] Reject payment exceeding balance' 'story,module:fee,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want payments larger than the due balance to be blocked so that the ledger stays consistent.
 
 **Acceptance criteria**
@@ -1355,7 +1358,7 @@ issue '[FR-05.05] Reject payment exceeding balance' 'story,module:fee,P0-critica
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.06] Reject negative or non-numeric payment amounts' 'story,module:fee,P0-critical,role:admin' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.06] Reject negative or non-numeric payment amounts' 'story,module:fee,P0-critical,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want negative or non-numeric amounts to be blocked so that the ledger stays valid.
 
 **Acceptance criteria**
@@ -1372,7 +1375,7 @@ issue '[FR-05.06] Reject negative or non-numeric payment amounts' 'story,module:
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.07] Compute payment status Due / Partially Paid / Paid' 'story,module:fee,P0-critical' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.07] Compute payment status Due / Partially Paid / Paid' 'story,module:fee,P0-critical' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall recompute the payment status (Due, Partially Paid, Paid) after every payment.
 
 **Acceptance criteria**
@@ -1389,7 +1392,7 @@ issue '[FR-05.07] Compute payment status Due / Partially Paid / Paid' 'story,mod
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.08] Generate receipt for each payment' 'story,module:fee,P1-high,role:admin' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.08] Generate receipt for each payment' 'story,module:fee,P1-high,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want a receipt for each payment so that there is proof of payment.
 
 **Acceptance criteria**
@@ -1407,7 +1410,7 @@ issue '[FR-05.08] Generate receipt for each payment' 'story,module:fee,P1-high,r
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.09] Student views own fee status, balance and history' 'story,module:fee,P0-critical,role:student' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.09] Student views own fee status, balance and history' 'story,module:fee,P0-critical,role:student' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want to see my payments.
 
 **Acceptance criteria**
@@ -1425,7 +1428,7 @@ issue '[FR-05.09] Student views own fee status, balance and history' 'story,modu
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.10] Payment history in chronological order' 'story,module:fee,P1-high,role:admin' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.10] Payment history in chronological order' 'story,module:fee,P1-high,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want a payment history with dates, amounts and modes so that I can audit transactions.
 
 **Acceptance criteria**
@@ -1442,7 +1445,7 @@ issue '[FR-05.10] Payment history in chronological order' 'story,module:fee,P1-h
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.11] Prevent duplicate payment submission' 'story,module:fee,P1-high,role:admin' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.11] Prevent duplicate payment submission' 'story,module:fee,P1-high,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want resubmitted or double-clicked payments to be caught so that no payment is recorded twice.
 
 **Acceptance criteria**
@@ -1459,7 +1462,7 @@ issue '[FR-05.11] Prevent duplicate payment submission' 'story,module:fee,P1-hig
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.12] Record payment mode' 'story,module:fee,P1-high,role:admin' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.12] Record payment mode' 'story,module:fee,P1-high,role:admin' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to select the payment mode (e.g. Online) when recording a payment.
 
 **Acceptance criteria**
@@ -1476,7 +1479,7 @@ issue '[FR-05.12] Record payment mode' 'story,module:fee,P1-high,role:admin' 'Sp
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-05.13] Outstanding dues report' 'story,module:fee,P2-normal,role:admin,inferred' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[FR-05.13] Outstanding dues report' 'story,module:fee,P2-normal,role:admin,inferred' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want a report of students with outstanding dues so that I can follow up.
 
 **Acceptance criteria**
@@ -1497,7 +1500,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Complaint Management =='
-issue '[EPIC] FR-06 - Complaint Management' 'epic,module:complaint' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[EPIC] FR-06 - Complaint Management' 'epic,module:complaint' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **Epic:** Complaint Management
 
 Record complaints and misconduct cases, assign severity and cumulative demerit points, track status and notify students.
@@ -1511,7 +1514,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[FR-06.01] Student submits a complaint' 'story,module:complaint,P0-critical,role:student' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.01] Student submits a complaint' 'story,module:complaint,P0-critical,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want to submit a complaint with a category and description so that hostel staff can act on it.
 
 **Acceptance criteria**
@@ -1530,7 +1533,7 @@ issue '[FR-06.01] Student submits a complaint' 'story,module:complaint,P0-critic
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.02] Validate incomplete complaints' 'story,module:complaint,P0-critical,role:student' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.02] Validate incomplete complaints' 'story,module:complaint,P0-critical,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want the complaint form to reject a blank description so that incomplete complaints are never recorded.
 
 **Acceptance criteria**
@@ -1548,7 +1551,7 @@ issue '[FR-06.02] Validate incomplete complaints' 'story,module:complaint,P0-cri
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.03] Warden / Administrator logs a misconduct case' 'story,module:complaint,P0-critical,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.03] Warden / Administrator logs a misconduct case' 'story,module:complaint,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to log a misconduct case against a student so that discipline is tracked.
 
 **Acceptance criteria**
@@ -1567,7 +1570,7 @@ issue '[FR-06.03] Warden / Administrator logs a misconduct case' 'story,module:c
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.04] Filter and view complaints by status' 'story,module:complaint,P0-critical,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.04] Filter and view complaints by status' 'story,module:complaint,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to filter complaints by status so that I can work through the open ones.
 
 **Acceptance criteria**
@@ -1585,7 +1588,7 @@ issue '[FR-06.04] Filter and view complaints by status' 'story,module:complaint,
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.05] Configure severity levels and demerit-point rules' 'story,module:complaint,P0-critical,role:admin' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.05] Configure severity levels and demerit-point rules' 'story,module:complaint,P0-critical,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to configure severity levels and their demerit points so that penalties are applied consistently.
 
 **Acceptance criteria**
@@ -1604,7 +1607,7 @@ issue '[FR-06.05] Configure severity levels and demerit-point rules' 'story,modu
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.06] Assign severity and auto-assign demerit points' 'story,module:complaint,P0-critical,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.06] Assign severity and auto-assign demerit points' 'story,module:complaint,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to pick a severity when reviewing a complaint so that demerit points are assigned automatically.
 
 **Acceptance criteria**
@@ -1622,7 +1625,7 @@ issue '[FR-06.06] Assign severity and auto-assign demerit points' 'story,module:
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.07] Accumulate demerit points per student' 'story,module:complaint,P0-critical' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.07] Accumulate demerit points per student' 'story,module:complaint,P0-critical' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall add new demerit points to a student's running total so that repeat offences are visible.
 
 **Acceptance criteria**
@@ -1640,7 +1643,7 @@ issue '[FR-06.07] Accumulate demerit points per student' 'story,module:complaint
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.08] Update status Open / Under Review / Resolved with remarks' 'story,module:complaint,P0-critical,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.08] Update status Open / Under Review / Resolved with remarks' 'story,module:complaint,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to move a complaint through Open, Under Review and Resolved with remarks so that its progress is clear.
 
 **Acceptance criteria**
@@ -1658,7 +1661,7 @@ issue '[FR-06.08] Update status Open / Under Review / Resolved with remarks' 'st
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.09] Notify student of complaint outcome' 'story,module:complaint,P1-high,role:student' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.09] Notify student of complaint outcome' 'story,module:complaint,P1-high,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want to be notified when my complaint's status changes so that I know the outcome.
 
 **Acceptance criteria**
@@ -1676,7 +1679,7 @@ issue '[FR-06.09] Notify student of complaint outcome' 'story,module:complaint,P
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.10] Escalate repeated or severe complaint to the administrator' 'story,module:complaint,P2-normal,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.10] Escalate repeated or severe complaint to the administrator' 'story,module:complaint,P2-normal,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to escalate a repeated or severe complaint so that the administrator can take further action.
 
 **Acceptance criteria**
@@ -1695,7 +1698,7 @@ issue '[FR-06.10] Escalate repeated or severe complaint to the administrator' 's
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.11] Prevent editing resolved complaints without reopening' 'story,module:complaint,P1-high,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.11] Prevent editing resolved complaints without reopening' 'story,module:complaint,P1-high,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want resolved complaints to be locked so that history is not altered by accident.
 
 **Acceptance criteria**
@@ -1713,7 +1716,7 @@ issue '[FR-06.11] Prevent editing resolved complaints without reopening' 'story,
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.12] Student views own complaints and demerit points' 'story,module:complaint,P1-high,role:student' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.12] Student views own complaints and demerit points' 'story,module:complaint,P1-high,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want to view my complaints and demerit total so that I can follow their status.
 
 **Acceptance criteria**
@@ -1732,7 +1735,7 @@ issue '[FR-06.12] Student views own complaints and demerit points' 'story,module
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-06.13] Complaint summary report by category' 'story,module:complaint,P1-high,role:admin' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-06.13] Complaint summary report by category' 'story,module:complaint,P1-high,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want a complaint summary grouped by category so that I can spot recurring problems.
 
 **Acceptance criteria**
@@ -1752,7 +1755,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Attendance Management =='
-issue '[EPIC] FR-07 - Attendance Management' 'epic,module:attendance' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[EPIC] FR-07 - Attendance Management' 'epic,module:attendance' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **Epic:** Attendance Management
 
 Maintain student attendance from recorded check-in and check-out times.
@@ -1766,7 +1769,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[FR-07.01] Record student check-in' 'story,module:attendance,P0-critical,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-07.01] Record student check-in' 'story,module:attendance,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to record a student's check-in so that arrivals are timestamped.
 
 **Acceptance criteria**
@@ -1784,7 +1787,7 @@ issue '[FR-07.01] Record student check-in' 'story,module:attendance,P0-critical,
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-07.02] Record student check-out' 'story,module:attendance,P0-critical,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-07.02] Record student check-out' 'story,module:attendance,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to record a student's check-out so that the attendance entry is completed.
 
 **Acceptance criteria**
@@ -1802,7 +1805,7 @@ issue '[FR-07.02] Record student check-out' 'story,module:attendance,P0-critical
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-07.03] Flag duplicate check-in without check-out' 'story,module:attendance,P0-critical,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-07.03] Flag duplicate check-in without check-out' 'story,module:attendance,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want a second check-in without a check-out to be flagged so that attendance stays consistent.
 
 **Acceptance criteria**
@@ -1820,7 +1823,7 @@ issue '[FR-07.03] Flag duplicate check-in without check-out' 'story,module:atten
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-07.04] Error when checking out without an active check-in' 'story,module:attendance,P0-critical,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-07.04] Error when checking out without an active check-in' 'story,module:attendance,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want a clear error when I check out a student who has no active check-in.
 
 **Acceptance criteria**
@@ -1838,7 +1841,7 @@ issue '[FR-07.04] Error when checking out without an active check-in' 'story,mod
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-07.05] Restrict attendance to students with an allocated room' 'story,module:attendance,P1-high' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-07.05] Restrict attendance to students with an allocated room' 'story,module:attendance,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall offer attendance marking only for registered students who have an allocated room.
 
 **Acceptance criteria**
@@ -1856,7 +1859,7 @@ issue '[FR-07.05] Restrict attendance to students with an allocated room' 'story
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-07.06] Bulk attendance marking' 'story,module:attendance,P1-high,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-07.06] Bulk attendance marking' 'story,module:attendance,P1-high,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to mark check-in for many students at once so that group arrivals are quick.
 
 **Acceptance criteria**
@@ -1874,7 +1877,7 @@ issue '[FR-07.06] Bulk attendance marking' 'story,module:attendance,P1-high,role
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-07.07] Daily attendance summary (present / absent)' 'story,module:attendance,P1-high,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-07.07] Daily attendance summary (present / absent)' 'story,module:attendance,P1-high,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want a daily attendance summary so that I can see who is present or absent.
 
 **Acceptance criteria**
@@ -1892,7 +1895,7 @@ issue '[FR-07.07] Daily attendance summary (present / absent)' 'story,module:att
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-07.08] Attendance history on the student profile' 'story,module:attendance,P1-high,role:admin' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-07.08] Attendance history on the student profile' 'story,module:attendance,P1-high,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want each student's attendance history on their profile so that I can review their record.
 
 **Acceptance criteria**
@@ -1909,7 +1912,7 @@ issue '[FR-07.08] Attendance history on the student profile' 'story,module:atten
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-07.09] Attendance report by date range' 'story,module:attendance,P1-high,role:warden' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[FR-07.09] Attendance report by date range' 'story,module:attendance,P1-high,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want an attendance report filtered by date range.
 
 **Acceptance criteria**
@@ -1928,7 +1931,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Visitor Management =='
-issue '[EPIC] FR-08 - Visitor Management' 'epic,module:visitor' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[EPIC] FR-08 - Visitor Management' 'epic,module:visitor' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **Epic:** Visitor Management
 
 Record and update visitor check-in and check-out details.
@@ -1942,7 +1945,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[FR-08.01] Add Visitor form' 'story,module:visitor,P0-critical,role:admin' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-08.01] Add Visitor form' 'story,module:visitor,P0-critical,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want an Add Visitor form so that I can capture visitor details.
 
 **Acceptance criteria**
@@ -1960,7 +1963,7 @@ issue '[FR-08.01] Add Visitor form' 'story,module:visitor,P0-critical,role:admin
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-08.02] Visitor check-in with timestamp' 'story,module:visitor,P0-critical,role:admin' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-08.02] Visitor check-in with timestamp' 'story,module:visitor,P0-critical,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to check a visitor in so that the visit is logged with a timestamp.
 
 **Acceptance criteria**
@@ -1978,7 +1981,7 @@ issue '[FR-08.02] Visitor check-in with timestamp' 'story,module:visitor,P0-crit
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-08.03] Reject check-in with missing mandatory details' 'story,module:visitor,P0-critical,role:admin' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-08.03] Reject check-in with missing mandatory details' 'story,module:visitor,P0-critical,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want check-in to be blocked when mandatory details such as ID proof are missing.
 
 **Acceptance criteria**
@@ -1996,7 +1999,7 @@ issue '[FR-08.03] Reject check-in with missing mandatory details' 'story,module:
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-08.04] Visitor check-out updates the same log entry' 'story,module:visitor,P0-critical,role:admin' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-08.04] Visitor check-out updates the same log entry' 'story,module:visitor,P0-critical,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to record a visitor's departure on the same log entry so that visit duration is known.
 
 **Acceptance criteria**
@@ -2014,7 +2017,7 @@ issue '[FR-08.04] Visitor check-out updates the same log entry' 'story,module:vi
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-08.05] Prevent double check-out' 'story,module:visitor,P1-high,role:admin' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-08.05] Prevent double check-out' 'story,module:visitor,P1-high,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want an already checked-out entry to be protected so that visit times are not overwritten.
 
 **Acceptance criteria**
@@ -2032,7 +2035,7 @@ issue '[FR-08.05] Prevent double check-out' 'story,module:visitor,P1-high,role:a
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-08.06] Link visitor log to the visited student' 'story,module:visitor,P1-high,role:admin' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-08.06] Link visitor log to the visited student' 'story,module:visitor,P1-high,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want each visitor entry linked to the visited student so that a student's visitors can be reviewed.
 
 **Acceptance criteria**
@@ -2049,7 +2052,7 @@ issue '[FR-08.06] Link visitor log to the visited student' 'story,module:visitor
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-08.07] Search visitor logs by student or date' 'story,module:visitor,P1-high,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-08.07] Search visitor logs by student or date' 'story,module:visitor,P1-high,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to search visitor logs by student name or date so that I can trace visits.
 
 **Acceptance criteria**
@@ -2067,7 +2070,7 @@ issue '[FR-08.07] Search visitor logs by student or date' 'story,module:visitor,
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-08.08] Visitor report for a date range' 'story,module:visitor,P2-normal,role:admin' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-08.08] Visitor report for a date range' 'story,module:visitor,P2-normal,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want a visitor report for a date range so that I can review visits over time.
 
 **Acceptance criteria**
@@ -2087,7 +2090,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Home / Long-Leave Application =='
-issue '[EPIC] FR-09 - Home / Long-Leave Application' 'epic,module:leave' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[EPIC] FR-09 - Home / Long-Leave Application' 'epic,module:leave' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **Epic:** Home / Long-Leave Application
 
 Students apply for long leave; warden or administrator review, approve or reject, and the records are maintained.
@@ -2101,7 +2104,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[FR-09.01] Submit leave application' 'story,module:leave,P0-critical,role:student' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-09.01] Submit leave application' 'story,module:leave,P0-critical,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want to submit a leave application with dates and a reason so that the warden can review it.
 
 **Acceptance criteria**
@@ -2119,7 +2122,7 @@ issue '[FR-09.01] Submit leave application' 'story,module:leave,P0-critical,role
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-09.02] Validate leave date range' 'story,module:leave,P0-critical,role:student' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-09.02] Validate leave date range' 'story,module:leave,P0-critical,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want the form to reject an end date before the start date so that invalid leave is not recorded.
 
 **Acceptance criteria**
@@ -2137,7 +2140,7 @@ issue '[FR-09.02] Validate leave date range' 'story,module:leave,P0-critical,rol
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-09.03] Require a leave reason' 'story,module:leave,P0-critical,role:student' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-09.03] Require a leave reason' 'story,module:leave,P0-critical,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want the reason to be mandatory so that reviewers have context.
 
 **Acceptance criteria**
@@ -2155,7 +2158,7 @@ issue '[FR-09.03] Require a leave reason' 'story,module:leave,P0-critical,role:s
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-09.04] Warden reviews pending applications' 'story,module:leave,P0-critical,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-09.04] Warden reviews pending applications' 'story,module:leave,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want a list of pending leave applications so that I can review them.
 
 **Acceptance criteria**
@@ -2173,7 +2176,7 @@ issue '[FR-09.04] Warden reviews pending applications' 'story,module:leave,P0-cr
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-09.05] Approve application and notify student' 'story,module:leave,P0-critical,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-09.05] Approve application and notify student' 'story,module:leave,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to approve a pending application so that the student is cleared to leave.
 
 **Acceptance criteria**
@@ -2192,7 +2195,7 @@ issue '[FR-09.05] Approve application and notify student' 'story,module:leave,P0
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-09.06] Reject application with remarks' 'story,module:leave,P0-critical,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-09.06] Reject application with remarks' 'story,module:leave,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to reject an application with remarks so that the student knows why.
 
 **Acceptance criteria**
@@ -2211,7 +2214,7 @@ issue '[FR-09.06] Reject application with remarks' 'story,module:leave,P0-critic
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-09.07] Flag overlapping leave dates' 'story,module:leave,P1-high,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-09.07] Flag overlapping leave dates' 'story,module:leave,P1-high,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want overlaps with an approved leave to be flagged so that I do not approve conflicting dates.
 
 **Acceptance criteria**
@@ -2228,7 +2231,7 @@ issue '[FR-09.07] Flag overlapping leave dates' 'story,module:leave,P1-high,role
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-09.08] Request more information from the student' 'story,module:leave,P2-normal,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-09.08] Request more information from the student' 'story,module:leave,P2-normal,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to return an application to the student asking for more information.
 
 **Acceptance criteria**
@@ -2247,7 +2250,7 @@ issue '[FR-09.08] Request more information from the student' 'story,module:leave
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-09.09] Student leave application history' 'story,module:leave,P1-high,role:student' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-09.09] Student leave application history' 'story,module:leave,P1-high,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want to see my past and current applications so that I can track their status.
 
 **Acceptance criteria**
@@ -2264,7 +2267,7 @@ issue '[FR-09.09] Student leave application history' 'story,module:leave,P1-high
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-09.10] Administrator consolidated leave records' 'story,module:leave,P1-high,role:admin' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-09.10] Administrator consolidated leave records' 'story,module:leave,P1-high,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want a consolidated list of all students' leave records.
 
 **Acceptance criteria**
@@ -2283,7 +2286,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Notice / Information Management =='
-issue '[EPIC] FR-10 - Notice / Information Management' 'epic,module:notice' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[EPIC] FR-10 - Notice / Information Management' 'epic,module:notice' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **Epic:** Notice / Information Management
 
 Maintain and publish hostel notices visible to the intended audience.
@@ -2297,7 +2300,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[FR-10.01] Create and publish a notice' 'story,module:notice,P0-critical,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-10.01] Create and publish a notice' 'story,module:notice,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to create and publish a notice with a title and content so that students get important information.
 
 **Acceptance criteria**
@@ -2316,7 +2319,7 @@ issue '[FR-10.01] Create and publish a notice' 'story,module:notice,P0-critical,
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-10.02] Validate empty notice title or content' 'story,module:notice,P0-critical,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-10.02] Validate empty notice title or content' 'story,module:notice,P0-critical,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want publishing to be blocked when required fields are empty.
 
 **Acceptance criteria**
@@ -2334,7 +2337,7 @@ issue '[FR-10.02] Validate empty notice title or content' 'story,module:notice,P
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-10.03] Show published notices on the student dashboard' 'story,module:notice,P0-critical,role:student' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-10.03] Show published notices on the student dashboard' 'story,module:notice,P0-critical,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want new notices to appear on my dashboard so that I see hostel announcements.
 
 **Acceptance criteria**
@@ -2351,7 +2354,7 @@ issue '[FR-10.03] Show published notices on the student dashboard' 'story,module
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-10.04] Target audience for notices' 'story,module:notice,P1-high,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-10.04] Target audience for notices' 'story,module:notice,P1-high,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to choose the target audience so that only relevant students see a notice.
 
 **Acceptance criteria**
@@ -2369,7 +2372,7 @@ issue '[FR-10.04] Target audience for notices' 'story,module:notice,P1-high,role
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-10.05] Edit an existing notice' 'story,module:notice,P1-high,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-10.05] Edit an existing notice' 'story,module:notice,P1-high,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to edit a published notice so that information stays correct.
 
 **Acceptance criteria**
@@ -2386,7 +2389,7 @@ issue '[FR-10.05] Edit an existing notice' 'story,module:notice,P1-high,role:war
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-10.06] Delete or expire a notice' 'story,module:notice,P1-high,role:admin' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-10.06] Delete or expire a notice' 'story,module:notice,P1-high,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want to delete or expire a notice so that outdated information disappears.
 
 **Acceptance criteria**
@@ -2404,7 +2407,7 @@ issue '[FR-10.06] Delete or expire a notice' 'story,module:notice,P1-high,role:a
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-10.07] Order notices newest first' 'story,module:notice,P1-high,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-10.07] Order notices newest first' 'story,module:notice,P1-high,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want notices listed newest first so that recent information is on top.
 
 **Acceptance criteria**
@@ -2421,7 +2424,7 @@ issue '[FR-10.07] Order notices newest first' 'story,module:notice,P1-high,role:
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-10.08] Search notices by keyword' 'story,module:notice,P2-normal,role:warden' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-10.08] Search notices by keyword' 'story,module:notice,P2-normal,role:warden' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want to search notices by keyword.
 
 **Acceptance criteria**
@@ -2438,7 +2441,7 @@ issue '[FR-10.08] Search notices by keyword' 'story,module:notice,P2-normal,role
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-10.09] Restrict notice authoring to Warden and Administrator' 'story,module:notice,P0-critical' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-10.09] Restrict notice authoring to Warden and Administrator' 'story,module:notice,P0-critical' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall allow only Warden and Administrator roles to create, edit or delete notices.
 
 **Acceptance criteria**
@@ -2456,7 +2459,7 @@ issue '[FR-10.09] Restrict notice authoring to Warden and Administrator' 'story,
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[FR-10.10] Student notices page' 'story,module:notice,P1-high,role:student' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[FR-10.10] Student notices page' 'story,module:notice,P1-high,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want a page listing all notices so that I can read past announcements.
 
 **Acceptance criteria**
@@ -2475,7 +2478,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Dashboards, Reports & Notifications =='
-issue '[EPIC] X - Dashboards, Reports & Notifications' 'epic,module:crosscut' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[EPIC] X - Dashboards, Reports & Notifications' 'epic,module:crosscut' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **Epic:** Dashboards, Reports & Notifications
 
 Role dashboards, a reports hub, shared export and the student notification inbox that tie the modules together.
@@ -2489,7 +2492,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[X.01] Student dashboard' 'story,module:crosscut,P0-critical,role:student' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[X.01] Student dashboard' 'story,module:crosscut,P0-critical,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want a dashboard showing my room, fee status, latest notices, complaints and leave status.
 
 **Acceptance criteria**
@@ -2507,7 +2510,7 @@ issue '[X.01] Student dashboard' 'story,module:crosscut,P0-critical,role:student
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[X.02] Warden dashboard' 'story,module:crosscut,P1-high,role:warden,inferred' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[X.02] Warden dashboard' 'story,module:crosscut,P1-high,role:warden,inferred' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **warden**, I want a dashboard with pending leave, open complaints, vacancy and today's attendance.
 
 **Acceptance criteria**
@@ -2525,7 +2528,7 @@ issue '[X.02] Warden dashboard' 'story,module:crosscut,P1-high,role:warden,infer
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[X.03] Administrator dashboard' 'story,module:crosscut,P1-high,role:admin,inferred' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[X.03] Administrator dashboard' 'story,module:crosscut,P1-high,role:admin,inferred' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want an overview of totals (students, rooms, dues) with quick links.
 
 **Acceptance criteria**
@@ -2543,7 +2546,7 @@ issue '[X.03] Administrator dashboard' 'story,module:crosscut,P1-high,role:admin
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[X.04] Reports hub' 'story,module:crosscut,P1-high,role:admin' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[X.04] Reports hub' 'story,module:crosscut,P1-high,role:admin' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want one page linking every report so that I can find them easily.
 
 **Acceptance criteria**
@@ -2560,7 +2563,7 @@ issue '[X.04] Reports hub' 'story,module:crosscut,P1-high,role:admin' 'Sprint 6 
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[X.05] Reusable CSV / PDF export' 'story,module:crosscut,P2-normal,role:admin,inferred' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[X.05] Reusable CSV / PDF export' 'story,module:crosscut,P2-normal,role:admin,inferred' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As an **administrator**, I want reports to be exportable as CSV or PDF.
 
 **Acceptance criteria**
@@ -2578,7 +2581,7 @@ issue '[X.05] Reusable CSV / PDF export' 'story,module:crosscut,P2-normal,role:a
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[X.06] Student notification inbox' 'story,module:crosscut,P1-high,role:student' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[X.06] Student notification inbox' 'story,module:crosscut,P1-high,role:student' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **student**, I want an inbox for my notifications so that I can see allocation, complaint and leave updates.
 
 **Acceptance criteria**
@@ -2598,7 +2601,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Non-Functional Requirements =='
-issue '[EPIC] NFR - Non-Functional Requirements' 'epic,module:nfr' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[EPIC] NFR - Non-Functional Requirements' 'epic,module:nfr' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **Epic:** Non-Functional Requirements
 
 Security, usability, performance, reliability, data integrity, maintainability, scalability and availability.
@@ -2612,7 +2615,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[NFR.01] NFR-01: Enforce role-based access control on every route and API' 'nfr,module:nfr,P0-critical' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.01] NFR-01: Enforce role-based access control on every route and API' 'nfr,module:nfr,P0-critical' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall check the caller's role on every endpoint so that only permitted users can act.
 
 **Acceptance criteria**
@@ -2630,7 +2633,7 @@ issue '[NFR.01] NFR-01: Enforce role-based access control on every route and API
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.02] NFR-01: Secure password storage and session handling' 'nfr,module:nfr,P0-critical,inferred' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.02] NFR-01: Secure password storage and session handling' 'nfr,module:nfr,P0-critical,inferred' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall store passwords hashed and expire idle sessions.
 
 **Acceptance criteria**
@@ -2649,7 +2652,7 @@ issue '[NFR.02] NFR-01: Secure password storage and session handling' 'nfr,modul
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.03] NFR-01: Students can only see their own records' 'nfr,module:nfr,P0-critical' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.03] NFR-01: Students can only see their own records' 'nfr,module:nfr,P0-critical' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall restrict students to their own room, fee, complaint and leave data.
 
 **Acceptance criteria**
@@ -2667,7 +2670,7 @@ issue '[NFR.03] NFR-01: Students can only see their own records' 'nfr,module:nfr
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.04] NFR-01: Input sanitisation against injection and XSS' 'nfr,module:nfr,P1-high,inferred' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.04] NFR-01: Input sanitisation against injection and XSS' 'nfr,module:nfr,P1-high,inferred' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall sanitise all user input and use parameterised queries.
 
 **Acceptance criteria**
@@ -2686,7 +2689,7 @@ issue '[NFR.04] NFR-01: Input sanitisation against injection and XSS' 'nfr,modul
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.05] NFR-02: Usability review with sample users' 'nfr,module:nfr,P2-normal' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.05] NFR-02: Usability review with sample users' 'nfr,module:nfr,P2-normal' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want a usability check so that staff need minimal training.
 
 **Acceptance criteria**
@@ -2704,7 +2707,7 @@ issue '[NFR.05] NFR-02: Usability review with sample users' 'nfr,module:nfr,P2-n
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.06] NFR-03: Performance baseline under 3 seconds' 'nfr,module:nfr,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.06] NFR-03: Performance baseline under 3 seconds' 'nfr,module:nfr,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall respond to login, search, room allocation and record updates in under 3 seconds under normal load.
 
 **Acceptance criteria**
@@ -2722,7 +2725,7 @@ issue '[NFR.06] NFR-03: Performance baseline under 3 seconds' 'nfr,module:nfr,P1
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.07] NFR-03: Database indexes and paginated lists' 'nfr,module:nfr,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.07] NFR-03: Database indexes and paginated lists' 'nfr,module:nfr,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want indexes on lookup columns and paginated lists so that large tables stay fast.
 
 **Acceptance criteria**
@@ -2740,7 +2743,7 @@ issue '[NFR.07] NFR-03: Database indexes and paginated lists' 'nfr,module:nfr,P1
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.08] NFR-04: Backup and restore procedure' 'nfr,module:nfr,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.08] NFR-04: Backup and restore procedure' 'nfr,module:nfr,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want a documented backup and restore procedure so that data loss is minimised.
 
 **Acceptance criteria**
@@ -2758,7 +2761,7 @@ issue '[NFR.08] NFR-04: Backup and restore procedure' 'nfr,module:nfr,P1-high' '
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.09] NFR-04: Transactional writes and graceful failure handling' 'nfr,module:nfr,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.09] NFR-04: Transactional writes and graceful failure handling' 'nfr,module:nfr,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** The **system** shall wrap multi-step updates in transactions and show friendly errors on failure.
 
 **Acceptance criteria**
@@ -2776,7 +2779,7 @@ issue '[NFR.09] NFR-04: Transactional writes and graceful failure handling' 'nfr
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.10] NFR-05: Database constraints and server-side integrity rules' 'nfr,module:nfr,P0-critical' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.10] NFR-05: Database constraints and server-side integrity rules' 'nfr,module:nfr,P0-critical' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want constraints and validation that prevent duplicate students, invalid allocations and inconsistent payment or leave records.
 
 **Acceptance criteria**
@@ -2795,7 +2798,7 @@ issue '[NFR.10] NFR-05: Database constraints and server-side integrity rules' 'n
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.11] NFR-06: Modular code structure and coding standards' 'nfr,module:nfr,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.11] NFR-06: Modular code structure and coding standards' 'nfr,module:nfr,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want modules organised so that new hostel functions can be added with minimal impact.
 
 **Acceptance criteria**
@@ -2813,7 +2816,7 @@ issue '[NFR.11] NFR-06: Modular code structure and coding standards' 'nfr,module
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.12] NFR-07: Support multiple hostels or blocks in the data model' 'nfr,module:nfr,P2-normal' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.12] NFR-07: Support multiple hostels or blocks in the data model' 'nfr,module:nfr,P2-normal' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want hostel/block as a first-class attribute so that the system scales with the institution.
 
 **Acceptance criteria**
@@ -2831,7 +2834,7 @@ issue '[NFR.12] NFR-07: Support multiple hostels or blocks in the data model' 'n
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[NFR.13] NFR-08: Health check and maintenance-window handling' 'nfr,module:nfr,P2-normal' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[NFR.13] NFR-08: Health check and maintenance-window handling' 'nfr,module:nfr,P2-normal' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want a health endpoint and a planned-downtime approach so that the system is available during working hours.
 
 **Acceptance criteria**
@@ -2851,7 +2854,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Testing & Quality Assurance =='
-issue '[EPIC] QA - Testing & Quality Assurance' 'epic,module:qa' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[EPIC] QA - Testing & Quality Assurance' 'epic,module:qa' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **Epic:** Testing & Quality Assurance
 
 Execute the 80 Test Plan cases (30 unit, 30 integration, 20 system) across 10 modules and record results.
@@ -2865,7 +2868,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[QA.01] Set up test framework and fixtures' 'test,module:qa,P0-critical' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[QA.01] Set up test framework and fixtures' 'test,module:qa,P0-critical' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want a test framework wired to the seed data so that Test Plan cases can be automated.
 
 **Acceptance criteria**
@@ -2883,7 +2886,7 @@ issue '[QA.01] Set up test framework and fixtures' 'test,module:qa,P0-critical' 
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.02] Execute Login test cases' 'test,module:qa,P1-high' 'Sprint 1 - Foundation & Login' "$(cat <<'__BODY__'
+issue '[QA.02] Execute Login test cases' 'test,module:qa,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want to execute UT_01-03, IT_01-03, ST_01-02 and record the Actual Result and Test Result columns so that the module is verified.
 
 **Acceptance criteria**
@@ -2902,7 +2905,7 @@ issue '[QA.02] Execute Login test cases' 'test,module:qa,P1-high' 'Sprint 1 - Fo
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.03] Execute Student Registration test cases' 'test,module:qa,P1-high' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[QA.03] Execute Student Registration test cases' 'test,module:qa,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want to execute UT_04-06, IT_04-06, ST_03-04 and record the Actual Result and Test Result columns so that the module is verified.
 
 **Acceptance criteria**
@@ -2921,7 +2924,7 @@ issue '[QA.03] Execute Student Registration test cases' 'test,module:qa,P1-high'
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.04] Execute Room Management test cases' 'test,module:qa,P1-high' 'Sprint 2 - Students & Rooms' "$(cat <<'__BODY__'
+issue '[QA.04] Execute Room Management test cases' 'test,module:qa,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want to execute UT_07-09, IT_07-09, ST_05-06 and record the Actual Result and Test Result columns so that the module is verified.
 
 **Acceptance criteria**
@@ -2940,7 +2943,7 @@ issue '[QA.04] Execute Room Management test cases' 'test,module:qa,P1-high' 'Spr
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.05] Execute Room Allocation test cases' 'test,module:qa,P1-high' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[QA.05] Execute Room Allocation test cases' 'test,module:qa,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want to execute UT_10-12, IT_10-12, ST_07-08 and record the Actual Result and Test Result columns so that the module is verified.
 
 **Acceptance criteria**
@@ -2959,7 +2962,7 @@ issue '[QA.05] Execute Room Allocation test cases' 'test,module:qa,P1-high' 'Spr
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.06] Execute Fee Management test cases' 'test,module:qa,P1-high' 'Sprint 3 - Allocation & Fees' "$(cat <<'__BODY__'
+issue '[QA.06] Execute Fee Management test cases' 'test,module:qa,P1-high' 'Sprint-1 [19th Oct to 23rd Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want to execute UT_13-15, IT_13-15, ST_09-10 and record the Actual Result and Test Result columns so that the module is verified.
 
 **Acceptance criteria**
@@ -2978,7 +2981,7 @@ issue '[QA.06] Execute Fee Management test cases' 'test,module:qa,P1-high' 'Spri
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.07] Execute Complaint Management test cases' 'test,module:qa,P1-high' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[QA.07] Execute Complaint Management test cases' 'test,module:qa,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want to execute UT_16-18, IT_16-18, ST_11-12 and record the Actual Result and Test Result columns so that the module is verified.
 
 **Acceptance criteria**
@@ -2997,7 +3000,7 @@ issue '[QA.07] Execute Complaint Management test cases' 'test,module:qa,P1-high'
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.08] Execute Attendance Management test cases' 'test,module:qa,P1-high' 'Sprint 4 - Discipline & Attendance' "$(cat <<'__BODY__'
+issue '[QA.08] Execute Attendance Management test cases' 'test,module:qa,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want to execute UT_19-21, IT_19-21, ST_13-14 and record the Actual Result and Test Result columns so that the module is verified.
 
 **Acceptance criteria**
@@ -3016,7 +3019,7 @@ issue '[QA.08] Execute Attendance Management test cases' 'test,module:qa,P1-high
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.09] Execute Visitor Management test cases' 'test,module:qa,P1-high' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[QA.09] Execute Visitor Management test cases' 'test,module:qa,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want to execute UT_22-24, IT_22-24, ST_15-16 and record the Actual Result and Test Result columns so that the module is verified.
 
 **Acceptance criteria**
@@ -3035,7 +3038,7 @@ issue '[QA.09] Execute Visitor Management test cases' 'test,module:qa,P1-high' '
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.10] Execute Leave Application test cases' 'test,module:qa,P1-high' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[QA.10] Execute Leave Application test cases' 'test,module:qa,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want to execute UT_25-27, IT_25-27, ST_17-18 and record the Actual Result and Test Result columns so that the module is verified.
 
 **Acceptance criteria**
@@ -3054,7 +3057,7 @@ issue '[QA.10] Execute Leave Application test cases' 'test,module:qa,P1-high' 'S
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.11] Execute Notice Management test cases' 'test,module:qa,P1-high' 'Sprint 5 - Visitors, Leave & Notices' "$(cat <<'__BODY__'
+issue '[QA.11] Execute Notice Management test cases' 'test,module:qa,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want to execute UT_28-30, IT_28-30, ST_19-20 and record the Actual Result and Test Result columns so that the module is verified.
 
 **Acceptance criteria**
@@ -3073,7 +3076,7 @@ issue '[QA.11] Execute Notice Management test cases' 'test,module:qa,P1-high' 'S
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.12] Automate the 30 unit tests' 'test,module:qa,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[QA.12] Automate the 30 unit tests' 'test,module:qa,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want UT_01-UT_30 automated so that regressions are caught early.
 
 **Acceptance criteria**
@@ -3091,7 +3094,7 @@ issue '[QA.12] Automate the 30 unit tests' 'test,module:qa,P1-high' 'Sprint 6 - 
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.13] Automate the 30 integration tests' 'test,module:qa,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[QA.13] Automate the 30 integration tests' 'test,module:qa,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want IT_01-IT_30 automated so that module interactions stay correct.
 
 **Acceptance criteria**
@@ -3109,7 +3112,7 @@ issue '[QA.13] Automate the 30 integration tests' 'test,module:qa,P1-high' 'Spri
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.14] Automate the 20 system tests' 'test,module:qa,P2-normal' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[QA.14] Automate the 20 system tests' 'test,module:qa,P2-normal' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want ST_01-ST_20 automated as end-to-end checks.
 
 **Acceptance criteria**
@@ -3126,7 +3129,7 @@ issue '[QA.14] Automate the 20 system tests' 'test,module:qa,P2-normal' 'Sprint 
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.15] Add missing test cases for coverage gaps' 'test,module:qa,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[QA.15] Add missing test cases for coverage gaps' 'test,module:qa,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want extra cases for behaviour the Test Plan does not cover.
 
 **Acceptance criteria**
@@ -3147,7 +3150,7 @@ issue '[QA.15] Add missing test cases for coverage gaps' 'test,module:qa,P1-high
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.16] Bug template and triage routine' 'test,module:qa,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[QA.16] Bug template and triage routine' 'test,module:qa,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want a bug template and triage routine so that defects show up on the board.
 
 **Acceptance criteria**
@@ -3165,7 +3168,7 @@ issue '[QA.16] Bug template and triage routine' 'test,module:qa,P1-high' 'Sprint
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[QA.17] Regression run and final test summary report' 'test,module:qa,P0-critical' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[QA.17] Regression run and final test summary report' 'test,module:qa,P0-critical' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **tester**, I want a full regression run and summary so that release readiness is clear.
 
 **Acceptance criteria**
@@ -3185,7 +3188,7 @@ __BODY__
 )" "$EPIC"
 
 echo '== Documentation & Requirement Clarifications =='
-issue '[EPIC] DOC - Documentation & Requirement Clarifications' 'epic,module:docs' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[EPIC] DOC - Documentation & Requirement Clarifications' 'epic,module:docs' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **Epic:** Documentation & Requirement Clarifications
 
 Resolve document inconsistencies, keep traceability and produce setup and user documentation.
@@ -3199,7 +3202,7 @@ Close this epic only when every sub-issue is Done.
 __BODY__
 )"
 EPIC=$LAST
-issue '[DOC.01] Spike: resolve requirement ambiguities' 'docs,module:docs,P0-critical' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[DOC.01] Spike: resolve requirement ambiguities' 'docs,module:docs,P0-critical' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want answers to the open questions so that implementation is not guesswork.
 
 **Acceptance criteria**
@@ -3222,7 +3225,7 @@ issue '[DOC.01] Spike: resolve requirement ambiguities' 'docs,module:docs,P0-cri
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[DOC.02] Align use case diagram with SRS and Use Case Flow' 'docs,module:docs,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[DOC.02] Align use case diagram with SRS and Use Case Flow' 'docs,module:docs,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want a corrected diagram so that actor-to-use-case links match the SRS.
 
 **Acceptance criteria**
@@ -3241,7 +3244,7 @@ issue '[DOC.02] Align use case diagram with SRS and Use Case Flow' 'docs,module:
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[DOC.03] Requirements traceability matrix' 'docs,module:docs,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[DOC.03] Requirements traceability matrix' 'docs,module:docs,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want a matrix from FR to use case to test case to issue.
 
 **Acceptance criteria**
@@ -3258,7 +3261,7 @@ issue '[DOC.03] Requirements traceability matrix' 'docs,module:docs,P1-high' 'Sp
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[DOC.04] README and setup guide' 'docs,module:docs,P1-high' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[DOC.04] README and setup guide' 'docs,module:docs,P1-high' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **developer**, I want install and run steps so that anyone can start the project.
 
 **Acceptance criteria**
@@ -3275,7 +3278,7 @@ issue '[DOC.04] README and setup guide' 'docs,module:docs,P1-high' 'Sprint 6 - H
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[DOC.05] User manual per role' 'docs,module:docs,P2-normal,inferred' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[DOC.05] User manual per role' 'docs,module:docs,P2-normal,inferred' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want a short manual for Student, Warden and Administrator.
 
 **Acceptance criteria**
@@ -3293,7 +3296,7 @@ issue '[DOC.05] User manual per role' 'docs,module:docs,P2-normal,inferred' 'Spr
 - [ ] Board shows the card in Done
 __BODY__
 )" "$EPIC"
-issue '[DOC.06] Final demo and report' 'docs,module:docs,P1-high,inferred' 'Sprint 6 - Hardening & Release' "$(cat <<'__BODY__'
+issue '[DOC.06] Final demo and report' 'docs,module:docs,P1-high,inferred' 'Sprint-2 [26th Oct to 30th Oct]' "$(cat <<'__BODY__'
 **User story:** As a **team member**, I want a demo script and report for the final review.
 
 **Acceptance criteria**

@@ -1,0 +1,33 @@
+name: Task
+description: Engineering, infrastructure, or process task
+title: "[TASK]: "
+labels: ["task"]
+body:
+  - type: textarea
+    id: task_description
+    attributes:
+      label: Task Description
+      description: What needs to be done?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Deliverables / Checklist
+      value: |
+        - [ ] Task item 1
+        - [ ] Task item 2
+    validations:
+      required: true
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      options:
+        - "module:setup"
+        - "module:qa"
+        - "module:nfr"
+        - "module:docs"
+        - "module:crosscut"
+    validations:
+      required: true
