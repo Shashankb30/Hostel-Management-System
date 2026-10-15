@@ -3,6 +3,10 @@ description: Engineering, infrastructure, or process task
 title: "[TASK]: "
 labels: ["task"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for setup, DevOps, docs, or other non-story work. Close it with a PR that includes `Fixes #<issue_number>` (or `Closes` / `Resolves`).
   - type: textarea
     id: task_description
     attributes:
@@ -31,3 +35,9 @@ body:
         - "module:crosscut"
     validations:
       required: true
+  - type: input
+    id: traceability
+    attributes:
+      label: Traceability
+      description: SRS requirement IDs and Test Plan case IDs (if any).
+      placeholder: "Requirement: NFR-06, NFR-07; Test Plan: UT_SETUP_01"

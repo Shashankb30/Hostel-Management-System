@@ -3,6 +3,10 @@ description: File a bug or issue report
 title: "[BUG]: "
 labels: ["bug"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for defects. The fix PR must include `Fixes #<issue_number>` (or `Closes` / `Resolves`) so the bug auto-closes on merge to `main`.
   - type: textarea
     id: summary
     attributes:
@@ -28,3 +32,24 @@ body:
       description: What did you expect to happen vs what actually happened?
     validations:
       required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - "P0-critical"
+        - "P1-high"
+        - "P2-normal"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, OS, or deployment (local/dev/prod).
+      placeholder: Chrome 129 on Windows 10, local Django runserver
+  - type: input
+    id: related_tests
+    attributes:
+      label: Related Test Plan case(s)
+      placeholder: "UT_03_Login (or none)"

@@ -1,17 +1,17 @@
 name: User Story
-description: Propose a new user story for Hostel Management System
+description: Propose a new user story for the Hostel Management System
 title: "[STORY]: "
 labels: ["story"]
 body:
   - type: markdown
     attributes:
       value: |
-        Please provide details for the user story.
+        Use this template for a backlog **story**. Work is delivered through a pull request whose description includes `Fixes #<issue_number>` (or `Closes` / `Resolves`).
   - type: textarea
     id: user_story
     attributes:
       label: User Story
-      description: In the format: As a [role], I want [feature] so that [benefit].
+      description: In the format As a [role], I want [feature] so that [benefit].
       placeholder: As a Student, I want to submit a leave application so that the Warden can approve my absence.
     validations:
       required: true
@@ -40,6 +40,7 @@ body:
         - "module:visitor"
         - "module:leave"
         - "module:notice"
+        - "module:setup"
         - "module:crosscut"
     validations:
       required: true
@@ -53,3 +54,9 @@ body:
         - "P2-normal"
     validations:
       required: true
+  - type: input
+    id: traceability
+    attributes:
+      label: Traceability
+      description: SRS requirement IDs and Test Plan case IDs (if any).
+      placeholder: "Requirement: FR-09; Test Plan: UT_25, IT_25"

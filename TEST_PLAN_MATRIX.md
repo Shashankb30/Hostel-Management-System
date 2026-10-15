@@ -1,6 +1,6 @@
 # 🧪 Test Plan Traceability & Execution Matrix
 
-This document contains the complete set of 80 test cases defined for the Hostel Management System across Unit (UT), Integration (IT), and System (ST) testing levels.
+This document contains the complete set of test cases defined for the Hostel Management System across Unit (UT), Integration (IT), System (ST), and Setup/DevOps verification.
 
 | Test ID | Module | Description | Pre-conditions | Test Steps | Test Data | Expected Results | Actual Result | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -84,3 +84,5 @@ This document contains the complete set of 80 test cases defined for the Hostel 
 | **IT_30_Notice** | Notice / Information Management | Verify notices are ordered by most recent first | Multiple notices exist with different publish dates | 1. Navigate to Notice Management 2. View the notice list | N/A | Notices display in descending order of publish date | Pending | Pending |
 | **ST_19_Notice** | Notice / Information Management | Verify notice list can be filtered/searched by keyword | Multiple notices with varied titles exist | 1. Enter a keyword in the notice search box | Keyword: "Maintenance" | Only matching notices are displayed | Pending | Pending |
 | **ST_20_Notice** | Notice / Information Management | Verify only authorized roles (Warden/Administrator) can publish notices | A student account is logged in | 1. Student attempts to access Notice creation directly | Role: Student | System denies access / does not display the notice-creation option to students | Pending | Pending |
+| **UT_SETUP_01** | Setup / DevOps | Verify issue templates exist for story, task, and bug | Repository is on GitHub; Issues tab is open | 1. Click New issue 2. Confirm Story, Task, and Bug templates are listed | N/A | Three issue templates (User Story, Task, Bug Report) are available | Templates listed under `.github/ISSUE_TEMPLATE/` | Pass |
+| **UT_SETUP_02** | Setup / DevOps | Verify PR template requires a linking keyword and a test-case checklist | Repository is on GitHub | 1. Open New pull request 2. Inspect the auto-filled description | N/A | Description includes `Fixes #` (and documents Closes/Resolves) plus a test-case checklist | `.github/pull_request_template.md` contains Fixes # and Test-case checklist | Pass |
