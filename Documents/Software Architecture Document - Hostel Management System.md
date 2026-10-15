@@ -227,19 +227,3 @@ Connections: browser to application server over HTTP or HTTPS; application serve
 | Maintainability | Documented structure, ADR, migrations in version control | ADR and design documents in the repository |
 | Reliability and recoverability (NFR-04) | Single backup point (the database), transactions for multi-step changes | Backup and restore procedure (backlog issue NFR.08) |
 
-## 9. Architectural decisions, deviations and open items
-
-**Decisions.** The technology and structure decisions are recorded in ADR 0001: Python with Django, server-rendered templates with Bootstrap, SQLite for development with a PostgreSQL-compatible schema, one Django app per SRS module, and GitHub Actions for CI.
-
-**Deviations from the previously submitted SAD.** Any difference between this document and the SAD submitted in Part 1 must be listed here and explained in the final demo. Entries to be completed by the team before the demo:
-
-| Item | Submitted SAD | Implemented | Reason |
-| --- | --- | --- | --- |
-| (add rows as they arise) |  |  |  |
-
-**Open items to confirm with the team:**
-
-1. Demerit points per severity (suggested: minor 1, moderate 3, major 5) against the Test Plan.
-2. Allocation priority rule (suggested: senior year first).
-3. One fee record per student per academic year.
-4. Final choice of production database (SQLite for the demo, PostgreSQL optional).
