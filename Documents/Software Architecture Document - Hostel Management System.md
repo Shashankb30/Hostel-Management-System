@@ -1,6 +1,6 @@
 # Software Architecture Document
 
-Hostel Management System | Version 1.1 (draft) | 15 October 2026
+Hostel Management System 
 
 Course: Software Engineering (UE23CS341A) | Team: Shashankb30, abhijeetcyalgi
 
