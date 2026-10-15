@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: GitHub linking keywords (Fixes / Closes / Resolves)
+    url: https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue
+    about: Use these keywords in a PR targeting main so the linked issue closes on merge.
