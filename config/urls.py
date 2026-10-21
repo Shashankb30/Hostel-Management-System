@@ -1,4 +1,11 @@
 from django.contrib import admin
-from django.urls import path
+from django.contrib.auth import views as auth_views
+from django.urls import include, path
 
-urlpatterns = [path('admin/', admin.site.urls)]
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    # Temporary login/logout so the shell can be used; FR-01 replaces these.
+    path('login/', auth_views.LoginView.as_view(redirect_authenticated_user=True), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('', include('core.urls')),
+]
