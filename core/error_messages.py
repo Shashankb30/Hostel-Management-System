@@ -28,6 +28,7 @@ MESSAGES = {
     'no_role': 'Account has no role assigned. Contact the administrator',
     'account_inactive': 'Account is inactive or locked: this account has been deactivated. Contact the administrator',
     'account_locked_admin': 'Account is inactive or locked: it has been locked by an administrator. Contact the administrator',
+    'account_locked_attempts': 'Account is inactive or locked: too many failed login attempts. Contact the administrator to unlock it',
     'room_unavailable': 'Room unavailable',
     'no_vacant_rooms': 'No vacant rooms available',
     'room_has_occupants': 'Room has occupants; reassign them before deleting the room',

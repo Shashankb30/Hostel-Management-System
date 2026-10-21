@@ -11,6 +11,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from core.error_messages import msg
 
+from . import lockout
+
 # Recorded on the user object so django.contrib.auth.login() accepts it.
 AUTH_BACKEND = 'django.contrib.auth.backends.ModelBackend'
 
@@ -39,6 +41,8 @@ def hms_account(user):
 
 
 def _locked_key(account):
+    if account.failed_login_attempts >= lockout.max_attempts():
+        return 'account_locked_attempts'
     return 'account_locked_admin'
 
 
@@ -53,6 +57,9 @@ def authenticate_credentials(username, password):
     account = hms_account(user)
 
     if not user.check_password(password):
+        if account is not None and user.is_active and not account.is_locked:
+            if lockout.register_failure(account):
+                return _refused('account_locked_attempts')
         # Same message for "no such user" and "wrong password" (FR-01.03).
         return _refused('invalid_credentials')
 
@@ -64,5 +71,6 @@ def authenticate_credentials(username, password):
         return _refused('no_role')
     if account.is_locked:
         return _refused(_locked_key(account))
+    lockout.register_success(account)
     user.backend = AUTH_BACKEND
     return LoginResult(user=user)

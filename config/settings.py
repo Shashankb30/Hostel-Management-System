@@ -58,3 +58,6 @@ LOGOUT_REDIRECT_URL = 'login'
 from django.contrib.messages import constants as message_constants  # noqa: E402
 
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
+
+# FR-01.11: lock an account after this many wrong passwords in a row (Issue #26).
+HMS_MAX_FAILED_LOGINS = int(os.environ.get('HMS_MAX_FAILED_LOGINS', '5'))
