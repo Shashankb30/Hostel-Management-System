@@ -4,8 +4,9 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Temporary login/logout so the shell can be used; FR-01 replaces these.
-    path('login/', auth_views.LoginView.as_view(redirect_authenticated_user=True), name='login'),
+    # Temporary logout until FR-01.08 (Issue #23) adds the real one.
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    # Login, logout and password reset (FR-01).
+    path('', include('accounts.auth_urls')),
     path('', include('core.urls')),
 ]
