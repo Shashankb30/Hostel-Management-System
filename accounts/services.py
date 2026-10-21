@@ -38,6 +38,10 @@ def hms_account(user):
         return None
 
 
+def _locked_key(account):
+    return 'account_locked_admin'
+
+
 def authenticate_credentials(username, password):
     user_model = get_user_model()
     try:
@@ -55,8 +59,10 @@ def authenticate_credentials(username, password):
     # The password is right. Only now say why the account cannot be used, so that
     # strangers cannot probe which accounts are inactive or locked.
     if not user.is_active:
-        return _refused('invalid_credentials')
+        return _refused('account_inactive')
     if account is None:
         return _refused('no_role')
+    if account.is_locked:
+        return _refused(_locked_key(account))
     user.backend = AUTH_BACKEND
     return LoginResult(user=user)
