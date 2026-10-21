@@ -20,6 +20,8 @@ MESSAGES = {
     'unique': '{field} already exists',
     'invalid_format': '{field} format is invalid',
     'invalid_phone': 'Phone number must be exactly 10 digits',
+    'max_length': '{field} must be at most {limit} characters',
+    'invalid_choice': '{field} is not a valid choice',
     # Business messages taken from the Test Plan
     'invalid_credentials': 'Invalid username or password',
     'account_locked': 'Account is inactive or locked',
