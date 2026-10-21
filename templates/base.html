@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Hostel Management System{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <style>
+    .hms-sidebar .nav-link { color: #212529; border-radius: .375rem; }
+    .hms-sidebar .nav-link.active { background: #0d6efd; color: #fff; }
+    .hms-sidebar .nav-link.disabled { color: #8a8f98; }
+  </style>
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-dark bg-dark px-3">
+    <a class="navbar-brand" href="{% url 'core:home' %}">Hostel Management System</a>
+    {% if user.is_authenticated %}
+      <div class="d-flex align-items-center gap-3 text-white">
+        <span>{{ user.get_full_name|default:user.username }}
+          {% if hms_role_label %}<span class="badge text-bg-secondary ms-1">{{ hms_role_label }}</span>{% endif %}
+        </span>
+        <form method="post" action="{% url 'logout' %}" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-light btn-sm">Log out</button>
+        </form>
+      </div>
+    {% endif %}
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      {% if nav_items %}
+        <aside class="col-12 col-md-3 col-lg-2 bg-white border-end py-3 hms-sidebar">
+          <ul class="nav nav-pills flex-column gap-1" aria-label="Main menu">
+            {% for item in nav_items %}
+              <li class="nav-item">
+                {% if item.url %}
+                  <a class="nav-link{% if item.active %} active{% endif %}" href="{{ item.url }}">{{ item.label }}</a>
+                {% else %}
+                  <span class="nav-link disabled" aria-disabled="true">{{ item.label }} <span class="badge text-bg-light border">Soon</span></span>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </aside>
+      {% endif %}
+      <main class="col py-4 px-4">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+</body>
+</html>
