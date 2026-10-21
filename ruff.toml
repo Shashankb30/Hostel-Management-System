@@ -1,0 +1,11 @@
+# Lint rules for HMS (SETUP.10 / Issue #11).
+# Deliberately small: catch real bugs (syntax errors, unused or undefined names)
+# without failing the build over style. Tighten later if the team wants.
+target-version = "py312"
+extend-exclude = ["core/migrations"]
+
+[lint]
+select = [
+    "E9",  # syntax errors / runtime errors
+    "F",   # pyflakes: unused imports, undefined names, redefinitions
+]

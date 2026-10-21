@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.db import IntegrityError, transaction
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 from datetime import date
 from .models import Hostel, UserAccount, Student, Room, Allocation
 
