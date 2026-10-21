@@ -11,6 +11,12 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
+from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
+from django.urls import reverse_lazy
+
+from . import lockout
+from .forms import StyledPasswordResetForm, StyledSetPasswordForm
+from .services import hms_account
 
 
 class HmsLoginView(LoginView):
@@ -36,3 +42,28 @@ def logout_view(request):
     if was_logged_in:
         messages.success(request, 'You have been logged out')
     return redirect(settings.LOGOUT_REDIRECT_URL)
+
+
+class HmsPasswordResetView(PasswordResetView):
+    """Step 1: ask for the account's email address and send a reset link (FR-01.09)."""
+
+    form_class = StyledPasswordResetForm
+    template_name = 'registration/password_reset_form.html'
+    email_template_name = 'registration/password_reset_email.html'
+    subject_template_name = 'registration/password_reset_subject.txt'
+    success_url = reverse_lazy('password_reset_done')
+
+
+class HmsPasswordResetConfirmView(PasswordResetConfirmView):
+    """Step 3: choose the new password. A good reset also clears the failed-login count."""
+
+    form_class = StyledSetPasswordForm
+    template_name = 'registration/password_reset_confirm.html'
+    success_url = reverse_lazy('password_reset_complete')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        account = hms_account(self.user)
+        if account is not None:
+            lockout.register_success(account)
+        return response

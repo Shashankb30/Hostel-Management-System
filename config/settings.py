@@ -70,3 +70,15 @@ SESSION_COOKIE_AGE = HMS_SESSION_TIMEOUT_MINUTES * 60
 SESSION_SAVE_EVERY_REQUEST = True  # every request restarts the idle timer
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_SAMESITE = 'Lax'
+
+# FR-01.09: password reset emails. Development prints them in the terminal; set
+# EMAIL_BACKEND and the EMAIL_* variables in .env to send real mail.
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '25'))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '0') == '1'
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Hostel Management System <noreply@hms.local>')
+# A reset link works for this many minutes.
+PASSWORD_RESET_TIMEOUT = int(os.environ.get('HMS_RESET_LINK_MINUTES', '60')) * 60

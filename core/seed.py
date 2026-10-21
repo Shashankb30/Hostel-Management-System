@@ -68,6 +68,7 @@ def seed():
         user.is_active = is_active
         user.is_staff = role == UserAccount.ROLE_ADMIN
         user.is_superuser = role == UserAccount.ROLE_ADMIN
+        user.email = f'{username}@hms.example'  # lets the password reset flow be tried (Issue #24)
         user.set_password(password)  # reset to the documented baseline on every run
         user.save()
         account, created = UserAccount.objects.update_or_create(

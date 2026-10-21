@@ -7,6 +7,7 @@ from core.error_messages import msg
 from core.validators import RequiredValidator
 
 from .services import authenticate_credentials
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 
 
 class LoginForm(forms.Form):
@@ -44,3 +45,20 @@ class LoginForm(forms.Form):
 
     def get_user(self):
         return self.user_cache
+
+
+def _style_fields(form):
+    for field in form.fields.values():
+        field.widget.attrs['class'] = 'form-control'
+
+
+class StyledPasswordResetForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _style_fields(self)
+
+
+class StyledSetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _style_fields(self)
