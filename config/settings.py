@@ -61,3 +61,11 @@ MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
 # FR-01.11: lock an account after this many wrong passwords in a row (Issue #26).
 HMS_MAX_FAILED_LOGINS = int(os.environ.get('HMS_MAX_FAILED_LOGINS', '5'))
+
+# FR-01.07: a session lasts while the user keeps working, and ends after this many idle
+# minutes or when the browser closes (Issue #22).
+HMS_SESSION_TIMEOUT_MINUTES = int(os.environ.get('HMS_SESSION_TIMEOUT_MINUTES', '30'))
+SESSION_COOKIE_AGE = HMS_SESSION_TIMEOUT_MINUTES * 60
+SESSION_SAVE_EVERY_REQUEST = True  # every request restarts the idle timer
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_SAMESITE = 'Lax'
