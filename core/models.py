@@ -204,3 +204,30 @@ class Notice(TimeStampedModel):
     is_published = models.BooleanField(default=False)
     class Meta:
         indexes = [models.Index(fields=['is_published', 'expires_at'], name='ix_notice_published_expiry')]
+
+
+class Notification(TimeStampedModel):
+    """In-app message for a user. Created by core.notifications.notify() (Issue #14)."""
+    CATEGORY_ALLOCATION = 'ALLOCATION'
+    CATEGORY_FEE = 'FEE'
+    CATEGORY_LEAVE = 'LEAVE'
+    CATEGORY_COMPLAINT = 'COMPLAINT'
+    CATEGORY_NOTICE = 'NOTICE'
+    CATEGORY_CHOICES = [
+        (CATEGORY_ALLOCATION, 'Allocation'),
+        (CATEGORY_FEE, 'Fee'),
+        (CATEGORY_LEAVE, 'Leave'),
+        (CATEGORY_COMPLAINT, 'Complaint'),
+        (CATEGORY_NOTICE, 'Notice'),
+    ]
+    recipient = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='notifications')
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    message = models.CharField(max_length=255)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at', '-id']
+        indexes = [models.Index(fields=['recipient', 'is_read'], name='ix_notification_unread')]
+
+    def __str__(self):
+        return f'{self.category}: {self.message[:40]}'
