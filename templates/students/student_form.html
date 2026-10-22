@@ -10,7 +10,8 @@
         </ol>
       </nav>
       <h1 class="h3 mb-3">{{ title }}</h1>
-      <form method="post" class="card card-body shadow-sm">
+      {# novalidate: required fields are checked on the server so every error is shown together #}
+      <form method="post" novalidate class="card card-body shadow-sm">
         {% csrf_token %}
         {% if form.non_field_errors %}
           <div class="alert alert-danger" role="alert">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
