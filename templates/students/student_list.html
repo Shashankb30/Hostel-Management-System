@@ -10,12 +10,14 @@
     <table class="table table-sm table-striped align-middle bg-white">
       <thead>
         <tr>
+          <th>Student ID</th>
           <th>Roll No.</th><th>Name</th><th>Course</th><th>Year</th><th>Contact</th><th>Hostel</th><th>Status</th>
         </tr>
       </thead>
       <tbody>
         {% for student in page %}
           <tr>
+            <td>{{ student.student_id }}</td>
             <td>{{ student.roll_no }}</td>
             <td>{{ student.full_name }}</td>
             <td>{{ student.course|default:"-" }}</td>
