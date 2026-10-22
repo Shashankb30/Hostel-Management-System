@@ -26,6 +26,8 @@ python manage.py seed_data      # load or reset the Test Plan data
 | `stu9999` | `Pass@123` | Student | **inactive + locked** | IT_03_Login |
 | `stu1024` | `Pass@123` | Student | active | owner of the Divya S. record |
 
+Every seeded account has the email `<username>@hms.example`, so the password reset flow (FR-01.09) can be tried. In development the reset email is printed in the terminal.
+
 ## Students
 
 | Roll No | Name | Phone | Account | Used by |

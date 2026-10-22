@@ -11,7 +11,7 @@ Traceability: NFR-02 (simple, consistent UI), NFR-06, NFR-07 · Test case: `UT_S
 | Role helpers | `core/roles.py` | `get_role(user)`, `role_required(...)` decorator for views. |
 | Menu in every template | `core/context_processors.py` | Adds `nav_items`, `hms_role`, `hms_role_label`. |
 | Placeholder dashboards | `core/views.py`, `templates/core/dashboard.html` | `/dashboard/student/`, `/dashboard/warden/`, `/dashboard/admin/` |
-| Temporary login/logout | `config/urls.py`, `templates/registration/login.html` | So the shell can be used now. **FR-01 replaces these.** |
+| Login and logout | `accounts/` app, `templates/registration/login.html` | FR-01 (see [login-module.md](login-module.md)). They replaced the temporary login/logout of the first shell. |
 
 `/` sends each logged-in user to the dashboard for their role. A user with the wrong role gets a 403 page, and a user with no HMS account (or a locked one) gets a 403 page too.
 
