@@ -5,6 +5,9 @@ from django.contrib import messages
 from django.shortcuts import redirect
 
 from . import services
+from django.db import IntegrityError
+
+from core.error_messages import msg
 
 from core.models import Student, UserAccount
 from core.roles import get_account, role_required
@@ -30,9 +33,14 @@ def student_add(request):
     form = StudentRegistrationForm(
         request.POST or None, initial={'hostel': account.hostel_id if account else None})
     if request.method == 'POST' and form.is_valid():
-        result = services.register_student(**form.cleaned_data)
-        _announce(request, result)
-        return redirect('students:list')
+        try:
+            result = services.register_student(**form.cleaned_data)
+        except IntegrityError:
+            # Another administrator saved the same roll number a moment ago.
+            form.add_error('roll_no', msg('unique', field='Roll number'))
+        else:
+            _announce(request, result)
+            return redirect('students:list')
     return render(request, 'students/student_form.html', {'form': form, 'title': 'Add New Student'})
 
 

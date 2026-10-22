@@ -20,3 +20,8 @@ class BootstrapFormMixin:
         for field in self.fields.values():
             is_select = isinstance(field.widget, forms.Select)
             _add_class(field.widget, 'form-select' if is_select else 'form-control')
+
+    def add_error(self, field, error):
+        super().add_error(field, error)
+        if field in self.fields:  # errors without a field are shown above the form
+            _add_class(self.fields[field].widget, 'is-invalid')
