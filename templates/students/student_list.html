@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Student Management - HMS{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Student Management</h1>
+    <a class="btn btn-primary" href="{% url 'students:add' %}">Add New Student</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle bg-white">
+      <thead>
+        <tr>
+          <th>Roll No.</th><th>Name</th><th>Course</th><th>Year</th><th>Contact</th><th>Hostel</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in page %}
+          <tr>
+            <td>{{ student.roll_no }}</td>
+            <td>{{ student.full_name }}</td>
+            <td>{{ student.course|default:"-" }}</td>
+            <td>{{ student.year_of_study|default:"-" }}</td>
+            <td>{{ student.phone|default:"-" }}</td>
+            <td>{{ student.hostel.name }}</td>
+            <td>{% if student.is_active %}<span class="badge text-bg-success">Active</span>{% else %}<span class="badge text-bg-secondary">Inactive</span>{% endif %}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="9" class="text-center text-muted py-4">No students registered yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if page.has_other_pages %}
+    <nav aria-label="Student pages">
+      <ul class="pagination pagination-sm">
+        {% if page.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}">Previous</a></li>{% endif %}
+        <li class="page-item disabled"><span class="page-link">Page {{ page.number }} of {{ page.paginator.num_pages }}</span></li>
+        {% if page.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}">Next</a></li>{% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+{% endblock %}
