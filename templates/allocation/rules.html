@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Priority rules - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">Room Allocation</h1>
+  {% include 'allocation/_tabs.html' with tab='rules' %}
+  <p class="text-muted">A student's priority score is the sum of weight &times; value for every active rule.
+    Higher scores are served first; equal scores are first come, first served.</p>
+
+  {% if formset.errors %}
+    <div class="alert alert-danger"><ul class="mb-0">
+      {% for form in formset %}{% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}{% endfor %}
+    </ul></div>
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}{{ formset.management_form }}
+    {% for form in formset %}
+      {{ form.id }}
+      <div class="card mb-3"><div class="card-body row g-3 align-items-end">
+        <div class="col-12 col-md-3"><strong>{{ form.instance.get_criterion_display }}</strong></div>
+        <div class="col-6 col-md-2"><label class="form-label" for="{{ form.weight.id_for_label }}">Weight</label>{{ form.weight }}</div>
+        <div class="col-6 col-md-2"><div class="form-check"><label class="form-check-label">{{ form.is_active }} Active</label></div></div>
+        <div class="col-12 col-md-5"><label class="form-label" for="{{ form.description.id_for_label }}">Description</label>{{ form.description }}</div>
+      </div></div>
+    {% endfor %}
+    <button class="btn btn-primary" type="submit">Save rules</button>
+  </form>
+{% endblock %}

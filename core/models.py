@@ -101,6 +101,23 @@ class AllocationRequest(TimeStampedModel):
         indexes = [models.Index(fields=['status', '-priority', 'requested_at'], name='ix_allocreq_queue')]
 
 
+class AllocationRule(TimeStampedModel):
+    """A configurable room-allocation priority rule (Issue #55, FR-04.03).
+
+    A student's priority score is the sum of ``weight x value`` over every active rule.
+    Higher scores are served first; students with equal scores are served first-come,
+    first-served. See allocation.services.priority_score().
+    """
+    CRITERION_SENIORITY = 'seniority'
+    CRITERION_CHOICES = [(CRITERION_SENIORITY, 'Seniority (year of study)')]
+    criterion = models.CharField(max_length=20, choices=CRITERION_CHOICES, unique=True)
+    weight = models.PositiveSmallIntegerField(default=1)
+    is_active = models.BooleanField(default=True)
+    description = models.CharField(max_length=240, blank=True)
+
+    def __str__(self): return f'{self.get_criterion_display()} (weight {self.weight})'
+
+
 class FeeRecord(TimeStampedModel):
     student = models.ForeignKey(Student, on_delete=models.PROTECT, related_name='fee_records')
     hostel = models.ForeignKey(Hostel, on_delete=models.PROTECT, related_name='fee_records')

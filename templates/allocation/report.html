@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Allocation report - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">Room Allocation</h1>
+  {% include 'allocation/_tabs.html' with tab='report' %}
+
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-6 col-md-3"><label class="form-label" for="start">From</label><input class="form-control" type="date" id="start" name="start" value="{{ start|date:'Y-m-d' }}"></div>
+    <div class="col-6 col-md-3"><label class="form-label" for="end">To</label><input class="form-control" type="date" id="end" name="end" value="{{ end|date:'Y-m-d' }}"></div>
+    <div class="col-6 col-md-3"><label class="form-label" for="status">Status</label>
+      <select class="form-select" id="status" name="status"><option value="">Any status</option>
+        {% for value, label in statuses %}<option value="{{ value }}"{% if value == status %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select></div>
+    <div class="col-6 col-md-3 d-flex align-items-end gap-2">
+      <button class="btn btn-primary flex-fill" type="submit">Generate</button>
+      <button class="btn btn-outline-secondary flex-fill" type="submit" name="export" value="csv">CSV</button>
+    </div>
+  </form>
+
+  {% if rows is not None %}
+    <div class="table-responsive">
+      <table class="table table-sm table-striped align-middle bg-white">
+        <thead><tr><th>Roll no</th><th>Student</th><th>Room</th><th>Hostel</th><th>Allocated on</th><th>Ended on</th><th>Status</th><th>By</th></tr></thead>
+        <tbody>
+          {% for row in rows %}
+            <tr><td>{{ row.student.roll_no }}</td><td>{{ row.student.full_name }}</td><td>{{ row.room.room_no }}</td><td>{{ row.room.hostel.name }}</td>
+              <td>{{ row.allocated_on }}</td><td>{{ row.ended_on|default:"-" }}</td><td>{{ row.get_status_display }}</td>
+              <td>{{ row.allocated_by.user.username|default:"-" }}</td></tr>
+          {% empty %}
+            <tr><td colspan="8" class="text-center text-muted py-4">No allocations match.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+{% endblock %}

@@ -102,6 +102,15 @@ CREATE TABLE allocation_request (
 CREATE UNIQUE INDEX ux_request_one_waiting_per_student
     ON allocation_request(student_id) WHERE status = 'WAITING';
 
+-- Priority rules (FR-04.03): score = SUM(weight x value) over active rules.
+CREATE TABLE allocation_rule (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    criterion     VARCHAR(20)  NOT NULL UNIQUE,          -- seniority
+    weight        INTEGER      NOT NULL DEFAULT 1 CHECK (weight >= 0),
+    is_active     BOOLEAN      NOT NULL DEFAULT 1,
+    description   VARCHAR(240)
+);
+
 -- ------------------------------------------------------------ fees (FR-05) --
 CREATE TABLE fee (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
