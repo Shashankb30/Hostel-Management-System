@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}{% if manage %}Room Management{% else %}Rooms &amp; Vacancy{% endif %} - HMS{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">{% if manage %}Room Management{% else %}Rooms &amp; Vacancy{% endif %}</h1>
+    {% if manage %}<a class="btn btn-primary" href="{% url 'rooms:add' %}">Add Room</a>{% endif %}
+  </div>
+
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-8 col-md-4">
+      <select class="form-select" name="vacancy" aria-label="Vacancy filter">
+        {% for value, label in vacancy_choices %}<option value="{{ value }}"{% if value == vacancy %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-4 col-md-2"><button class="btn btn-outline-secondary w-100" type="submit">Filter</button></div>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle bg-white">
+      <thead>
+        <tr><th>Room No.</th><th>Hostel</th><th>Block</th><th>Floor</th><th>Type</th><th>Occupancy</th><th>Vacancy</th><th>Status</th><th>Availability</th><th class="text-end">Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td>{{ row.room.room_no }}</td>
+            <td>{{ row.room.hostel.name }}</td>
+            <td>{{ row.room.block|default:"-" }}</td>
+            <td>{{ row.room.floor }}</td>
+            <td>{{ row.room.room_type }}</td>
+            <td>{{ row.occupied }} / {{ row.room.capacity }}</td>
+            <td>{{ row.free }} vacant</td>
+            <td>
+              {% if row.status == 'vacant' %}<span class="badge text-bg-success">{{ row.status_label }}</span>
+              {% elif row.status == 'partial' %}<span class="badge text-bg-warning">{{ row.status_label }}</span>
+              {% else %}<span class="badge text-bg-danger">{{ row.status_label }}</span>{% endif %}
+            </td>
+            <td>{% if row.room.is_active %}<span class="badge text-bg-success">Available</span>{% else %}<span class="badge text-bg-secondary">Unavailable</span>{% endif %}</td>
+            <td class="text-end">
+              {% if manage %}<a class="btn btn-sm btn-outline-primary" href="{% url 'rooms:edit' row.room.pk %}">Edit</a>{% endif %}
+              {% if row.room.is_active %}
+                <form method="post" action="{% url 'rooms:deactivate' row.room.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit">Make unavailable</button></form>
+              {% else %}
+                <form method="post" action="{% url 'rooms:reactivate' row.room.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-success" type="submit">Make available</button></form>
+              {% endif %}
+              {% if manage %}
+                <form method="post" action="{% url 'rooms:delete' row.room.pk %}" class="d-inline"
+                      onsubmit="return confirm('Delete room {{ row.room.room_no|escapejs }}?');">{% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Delete</button></form>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="10" class="text-center text-muted py-4">No rooms match.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

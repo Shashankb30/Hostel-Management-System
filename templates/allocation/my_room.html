@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}My Room - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">My Room</h1>
+  {% if room %}
+    <div class="card shadow-sm" style="max-width: 32rem;">
+      <div class="card-body">
+        <h2 class="h4 mb-3">Room {{ room.room_no }}</h2>
+        <dl class="row mb-0">
+          <dt class="col-5">Room type</dt><dd class="col-7">{{ room.room_type }}</dd>
+          <dt class="col-5">Hostel</dt><dd class="col-7">{{ room.hostel.name }}</dd>
+          <dt class="col-5">Block</dt><dd class="col-7">{{ room.block|default:"-" }}</dd>
+          <dt class="col-5">Floor</dt><dd class="col-7">{{ room.floor }}</dd>
+          <dt class="col-5">Capacity</dt><dd class="col-7">{{ room.capacity }}</dd>
+          <dt class="col-5">Roommates</dt><dd class="col-7">{{ roommates }}</dd>
+          <dt class="col-5">Allocated on</dt><dd class="col-7">{{ allocation.allocated_on|date:"j M Y" }}</dd>
+        </dl>
+      </div>
+    </div>
+  {% elif student %}
+    <div class="alert alert-info" role="alert">You have not been allocated a room yet. The warden will allocate one soon.</div>
+  {% else %}
+    <div class="alert alert-info" role="alert">Your student record has not been created yet. Please contact the administrator.</div>
+  {% endif %}
+{% endblock %}
