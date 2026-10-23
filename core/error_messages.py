@@ -35,6 +35,9 @@ MESSAGES = {
     'room_unavailable': 'Room unavailable',
     'no_vacant_rooms': 'No vacant rooms available',
     'room_has_occupants': 'Room has occupants; reassign them before deleting the room',
+    'room_has_occupants_unavailable': 'Room has occupants; reassign them before making the room unavailable',
+    'room_has_history': 'Room has allocation history; make it unavailable instead of deleting it',
+    'capacity_below_occupancy': 'Capacity cannot be lower than the {occupied} student(s) currently in the room',
     'no_active_checkin': 'No active check-in exists',
     'already_checked_out': 'Already checked out',
 }

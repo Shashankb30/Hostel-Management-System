@@ -46,6 +46,13 @@ class Student(TimeStampedModel):
     guardian_phone = models.CharField(max_length=20, blank=True)
     is_active = models.BooleanField(default=True)
     def __str__(self): return f'{self.roll_no} - {self.full_name}'
+    @property
+    def student_id(self):
+        """The unique Student ID people see, for example STU00012.
+
+        Built from the primary key, so two students can never share one and it never changes.
+        """
+        return f'STU{self.pk:05d}' if self.pk is not None else ''
 
 
 class Room(TimeStampedModel):

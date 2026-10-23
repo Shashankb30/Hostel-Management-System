@@ -6,5 +6,8 @@ urlpatterns = [
     # Login, logout and password reset (FR-01).
     path('', include('accounts.auth_urls')),
     path('accounts/', include('accounts.urls')),
+    path('students/', include('students.urls')),
+    path('rooms/', include('rooms.urls')),
+    path('allocation/', include('allocation.urls')),
     path('', include('core.urls')),
 ]
