@@ -6,9 +6,10 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import DecimalField, Q, Sum, Value
 from django.db.models.functions import Coalesce
+from django.utils import timezone
 
 from core.error_messages import msg
-from core.models import FeeRecord, Student
+from core.models import FeeRecord, Payment, Student
 
 
 ZERO = Decimal('0.00')
@@ -147,3 +148,26 @@ def outstanding_paid(fee):
 def outstanding_of(fee):
     """What is still owed on a fee (never negative)."""
     return max(fee.amount_due - outstanding_paid(fee), ZERO)
+
+
+def record_payment(fee, *, amount, mode, paid_on=None, reference='', received_by=None):
+    """Record a payment against a fee (FR-05.03 to FR-05.06, FR-05.12).
+
+    The fee row is locked while the balance is checked, so two payments saved at the same
+    moment cannot together pay more than is owed.
+    """
+    if amount <= 0:
+        raise ValidationError(msg('positive', field='Amount'), code='positive')
+    if mode not in dict(Payment.MODE_CHOICES):
+        raise ValidationError(msg('invalid_choice', field='Payment mode'), code='invalid_choice')
+    paid_on = paid_on or timezone.localdate()
+    with transaction.atomic():
+        locked = FeeRecord.objects.select_for_update().get(pk=fee.pk)
+        balance = outstanding_of(locked)
+        if balance <= 0:
+            raise ValidationError(msg('fee_already_paid'), code='fee_already_paid')
+        if amount > balance:
+            raise ValidationError(msg('payment_exceeds_balance', balance=money(balance)),
+                                  code='payment_exceeds_balance')
+        return Payment.objects.create(fee_record=locked, amount=amount, paid_on=paid_on, mode=mode,
+                                      reference=reference, received_by=received_by)

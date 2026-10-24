@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load fees_extras %}
+{% block title %}Record payment - HMS{% endblock %}
+{% block content %}
+  <div class="row">
+    <div class="col-12 col-lg-7 col-xl-6">
+      <h1 class="h3 mb-1">Record payment</h1>
+      <p class="text-muted">{{ student.full_name }} ({{ student.roll_no }}) &middot; {{ fee.description }}, {{ fee.academic_year }}<br>
+        Fee {{ fee.amount_due|money }} &middot; outstanding {{ balance|money }}</p>
+      <form method="post" novalidate class="card card-body shadow-sm">
+        {% csrf_token %}
+        {% if token %}<input type="hidden" name="submission_token" value="{{ token }}">{% endif %}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger" role="alert">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+          </div>
+        {% endfor %}
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success">Save payment</button>
+          <a class="btn btn-outline-secondary" href="{% url 'fees:student_fees' student.pk %}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

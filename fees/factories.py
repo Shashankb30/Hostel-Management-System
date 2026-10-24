@@ -30,3 +30,15 @@ def make_fee(student, amount='50000', year='2026-27', description='Hostel fee', 
 def make_payment(fee, amount, paid_on=None, mode='cash', reference=''):
     return Payment.objects.create(fee_record=fee, amount=Decimal(amount), paid_on=paid_on or date.today(),
                                   mode=mode, reference=reference)
+
+
+def submit_payment(client, fee, **data):
+    """Fill in the payment form like a person does: open it (gets its token), then save it."""
+    url = reverse('fees:payment_create', args=[fee.pk])
+    opened = client.get(url)
+    token = (opened.context or {}).get('token', '') if opened.status_code == 200 else ''
+    payload = {'amount': '', 'mode': 'cash', 'paid_on': date.today().isoformat(), 'reference': ''}
+    payload.update(data)
+    if token:
+        payload['submission_token'] = token
+    return client.post(url, payload)

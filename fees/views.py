@@ -3,12 +3,13 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import get_object_or_404, redirect, render
 
+from core.error_messages import msg
 from core.feedback import flash_errors
 from core.models import FeeRecord, Student, UserAccount
 from core.roles import get_account, role_required
 
 from . import services
-from .forms import FeeForm
+from .forms import FeeForm, PaymentForm
 
 
 ADMIN_ONLY = role_required(UserAccount.ROLE_ADMIN)
@@ -87,3 +88,26 @@ def fee_edit(request, fee_id):
             return redirect('fees:student_fees', student_id=fee.student_id)
     return render(request, 'fees/fee_form.html', {
         'form': form, 'student': fee.student, 'title': f'Edit fee for {fee.student.full_name}'})
+
+
+@ADMIN_ONLY
+def payment_create(request, fee_id):
+    fee = get_object_or_404(FeeRecord.objects.select_related('student'), pk=fee_id)
+    balance = services.outstanding_of(fee)
+    if balance <= 0:
+        messages.info(request, msg('fee_already_paid'))
+        return redirect('fees:student_fees', student_id=fee.student_id)
+    form = PaymentForm(request.POST if request.method == 'POST' else None, balance=balance)
+    if request.method == 'POST' and form.is_valid():
+        data = form.cleaned_data
+        try:
+            payment = services.record_payment(
+                fee, amount=data['amount'], mode=data['mode'], paid_on=data['paid_on'],
+                reference=data['reference'], received_by=get_account(request.user))
+        except ValidationError as exc:
+            flash_errors(request, exc)
+        else:
+            messages.success(request, f'Payment of {services.money(payment.amount)} recorded')
+            return redirect('fees:student_fees', student_id=fee.student_id)
+    return render(request, 'fees/payment_form.html',
+                  {'form': form, 'fee': fee, 'student': fee.student, 'balance': balance})

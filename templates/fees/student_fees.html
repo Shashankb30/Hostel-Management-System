@@ -35,6 +35,7 @@
             <td><span class="badge text-bg-{{ fee.status_class }}">{{ fee.status_label }}</span></td>
             <td class="text-end">
               <a class="btn btn-sm btn-outline-primary" href="{% url 'fees:fee_edit' fee.pk %}">Edit</a>
+                {% if fee.outstanding > 0 %}<a class="btn btn-sm btn-success" href="{% url 'fees:payment_create' fee.pk %}">Record payment</a>{% endif %}
             </td>
           </tr>
         {% empty %}

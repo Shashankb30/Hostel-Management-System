@@ -3,10 +3,12 @@ from decimal import Decimal
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 from core.error_messages import msg
+from core.models import Payment
 from core.validators import NumericValidator, RegexFormatValidator
-from .services import CENT, MAX_AMOUNT
+from .services import CENT, MAX_AMOUNT, money
 
 
 def _required(label):
@@ -53,3 +55,36 @@ class FeeForm(forms.Form):
 
     def clean_amount_due(self):
         return _to_money(self.cleaned_data['amount_due'], 'Amount due')
+
+
+class PaymentForm(forms.Form):
+    """Record a payment (FR-05.03 to FR-05.06, FR-05.12)."""
+
+    amount = forms.CharField(
+        label='Amount (Rs.)', error_messages=_required('Amount'),
+        validators=[NumericValidator('Amount', positive=True, max_value=MAX_AMOUNT)])
+    mode = forms.ChoiceField(
+        label='Payment mode', choices=[('', 'Select mode')] + Payment.MODE_CHOICES,
+        error_messages={**_required('Payment mode'), 'invalid_choice': msg('invalid_choice', field='Payment mode')})
+    paid_on = forms.DateField(
+        label='Payment date', widget=forms.DateInput(attrs={'type': 'date'}),
+        error_messages={**_required('Payment date'), 'invalid': msg('invalid_format', field='Payment date')})
+    reference = forms.CharField(
+        label='Reference (optional)', max_length=100, required=False,
+        help_text='Transaction id, cheque or receipt book number.')
+
+    def __init__(self, *args, balance=None, **kwargs):
+        kwargs.setdefault('initial', {'paid_on': timezone.localdate()})
+        super().__init__(*args, **kwargs)
+        if balance is not None:
+            self.fields['amount'].help_text = f'Outstanding balance: {money(balance)}'
+        _style(self)
+
+    def clean_amount(self):
+        return _to_money(self.cleaned_data['amount'], 'Amount')
+
+    def clean_paid_on(self):
+        value = self.cleaned_data['paid_on']
+        if value > timezone.localdate():
+            raise ValidationError(msg('payment_date_future'), code='payment_date_future')
+        return value
