@@ -1,4 +1,6 @@
 """Fee screens (FR-05, Issues #67 to #79)."""
+import secrets
+
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import Http404
@@ -92,6 +94,24 @@ def fee_edit(request, fee_id):
         'form': form, 'student': fee.student, 'title': f'Edit fee for {fee.student.full_name}'})
 
 
+TOKEN_KEY = 'fee_payment_tokens'
+
+
+def _new_token(request):
+    """A one-time code for a payment form; only the most recent 20 are kept per session."""
+    token = secrets.token_urlsafe(16)
+    request.session[TOKEN_KEY] = request.session.get(TOKEN_KEY, [])[-19:] + [token]
+    return token
+
+
+def _token_is_open(request, token):
+    return bool(token) and token in request.session.get(TOKEN_KEY, [])
+
+
+def _close_token(request, token):
+    request.session[TOKEN_KEY] = [t for t in request.session.get(TOKEN_KEY, []) if t != token]
+
+
 @ADMIN_ONLY
 def payment_create(request, fee_id):
     fee = get_object_or_404(FeeRecord.objects.select_related('student'), pk=fee_id)
@@ -99,20 +119,30 @@ def payment_create(request, fee_id):
     if balance <= 0:
         messages.info(request, msg('fee_already_paid'))
         return redirect('fees:student_fees', student_id=fee.student_id)
-    form = PaymentForm(request.POST if request.method == 'POST' else None, balance=balance)
-    if request.method == 'POST' and form.is_valid():
-        data = form.cleaned_data
-        try:
-            payment = services.record_payment(
-                fee, amount=data['amount'], mode=data['mode'], paid_on=data['paid_on'],
-                reference=data['reference'], received_by=get_account(request.user))
-        except ValidationError as exc:
-            flash_errors(request, exc)
-        else:
-            messages.success(request, f'Payment of {services.money(payment.amount)} recorded')
-            return redirect('fees:receipt', payment_id=payment.pk)
-    return render(request, 'fees/payment_form.html',
-                  {'form': form, 'fee': fee, 'student': fee.student, 'balance': balance})
+    if request.method == 'POST':
+        token = request.POST.get('submission_token', '')
+        if not _token_is_open(request, token):
+            # This form was already submitted (double click, Back button, refresh).
+            messages.warning(request, msg('duplicate_payment'))
+            return redirect('fees:student_fees', student_id=fee.student_id)
+        form = PaymentForm(request.POST, balance=balance)
+        if form.is_valid():
+            data = form.cleaned_data
+            try:
+                payment = services.record_payment(
+                    fee, amount=data['amount'], mode=data['mode'], paid_on=data['paid_on'],
+                    reference=data['reference'], received_by=get_account(request.user))
+            except ValidationError as exc:
+                flash_errors(request, exc)
+            else:
+                _close_token(request, token)
+                messages.success(request, f'Payment of {services.money(payment.amount)} recorded')
+                return redirect('fees:receipt', payment_id=payment.pk)
+    else:
+        form = PaymentForm(None, balance=balance)
+        token = _new_token(request)
+    return render(request, 'fees/payment_form.html', {
+        'form': form, 'fee': fee, 'student': fee.student, 'balance': balance, 'token': token})
 
 
 @role_required(UserAccount.ROLE_ADMIN, UserAccount.ROLE_STUDENT)

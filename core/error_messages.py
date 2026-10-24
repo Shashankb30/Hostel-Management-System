@@ -20,6 +20,7 @@ MESSAGES = {
     'unique': '{field} already exists',
     'invalid_format': '{field} format is invalid',
     'invalid_phone': 'Phone number must be exactly 10 digits',
+    'duplicate_payment': 'This payment was already submitted; check the payment history before saving it again',
     'payment_exceeds_balance': 'Payment amount cannot exceed the outstanding balance of {balance}',
     'fee_already_paid': 'This fee is already fully paid',
     'payment_date_future': 'Payment date cannot be in the future',

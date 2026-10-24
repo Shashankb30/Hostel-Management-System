@@ -1,5 +1,6 @@
 """Fee rules for FR-05 (Issues #67 to #79). Forms and views call these; the rules live here."""
 from collections import defaultdict
+from datetime import timedelta
 from decimal import Decimal
 
 from django.core.exceptions import ValidationError
@@ -150,11 +151,22 @@ def outstanding_of(fee):
     return max(fee.amount_due - outstanding_paid(fee), ZERO)
 
 
+DUPLICATE_WINDOW = timedelta(seconds=30)
+
+
+def _recently_recorded(fee, amount, mode, paid_on):
+    """True if an identical payment for this fee was saved moments ago (ST_10_Fee)."""
+    return Payment.objects.filter(
+        fee_record=fee, amount=amount, mode=mode, paid_on=paid_on,
+        created_at__gte=timezone.now() - DUPLICATE_WINDOW).exists()
+
+
 def record_payment(fee, *, amount, mode, paid_on=None, reference='', received_by=None):
-    """Record a payment against a fee (FR-05.03 to FR-05.06, FR-05.12).
+    """Record a payment against a fee (FR-05.03 to FR-05.06, FR-05.11, FR-05.12).
 
     The fee row is locked while the balance is checked, so two payments saved at the same
-    moment cannot together pay more than is owed.
+    moment cannot together pay more than is owed, and an identical payment saved within
+    30 seconds is treated as an accidental double submission.
     """
     if amount <= 0:
         raise ValidationError(msg('positive', field='Amount'), code='positive')
@@ -166,6 +178,8 @@ def record_payment(fee, *, amount, mode, paid_on=None, reference='', received_by
         balance = outstanding_of(locked)
         if balance <= 0:
             raise ValidationError(msg('fee_already_paid'), code='fee_already_paid')
+        if _recently_recorded(locked, amount, mode, paid_on):
+            raise ValidationError(msg('duplicate_payment'), code='duplicate_payment')
         if amount > balance:
             raise ValidationError(msg('payment_exceeds_balance', balance=money(balance)),
                                   code='payment_exceeds_balance')
