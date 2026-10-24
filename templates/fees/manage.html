@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load fees_extras %}
+{% block title %}Fee Management - HMS{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Fee Management</h1>
+
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-md-4"><div class="card card-body py-2"><div class="text-muted small">Total fees</div><div class="h5 mb-0">{{ totals.total|money }}</div></div></div>
+    <div class="col-6 col-md-4"><div class="card card-body py-2"><div class="text-muted small">Collected</div><div class="h5 mb-0">{{ totals.paid|money }}</div></div></div>
+    <div class="col-6 col-md-4"><div class="card card-body py-2"><div class="text-muted small">Outstanding</div><div class="h5 mb-0">{{ totals.outstanding|money }}</div></div></div>
+  </div>
+
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-12 col-md-6">
+      <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Search student name or roll number">
+    </div>
+    <div class="col-12 col-md-4">
+      <select class="form-select" name="status" aria-label="Status">
+        {% for value, label in status_choices %}<option value="{{ value }}"{% if value == status %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-12 col-md-2"><button class="btn btn-outline-secondary w-100" type="submit">Filter</button></div>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle bg-white">
+      <thead>
+        <tr><th>Roll no</th><th>Student</th><th>Hostel</th><th class="text-end">Total fee</th><th class="text-end">Paid</th><th class="text-end">Outstanding</th><th>Status</th><th class="text-end">Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td>{{ row.student.roll_no }}</td>
+            <td>{{ row.student.full_name }}</td>
+            <td>{{ row.student.hostel.code }}</td>
+            <td class="text-end">{{ row.total|money }}</td>
+            <td class="text-end">{{ row.paid|money }}</td>
+            <td class="text-end">{{ row.outstanding|money }}</td>
+            <td><span class="badge text-bg-{{ row.css }}">{{ row.label }}</span></td>
+            <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'fees:student_fees' row.student.pk %}">Open</a></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="8" class="text-center text-muted py-4">No students found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

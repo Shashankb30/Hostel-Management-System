@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     'students.apps.StudentsConfig',
     'rooms.apps.RoomsConfig',
     'allocation.apps.AllocationConfig',
+    'fees.apps.FeesConfig',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

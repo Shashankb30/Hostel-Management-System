@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load fees_extras %}
+{% block title %}Fees - {{ student.full_name }} - HMS{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <h1 class="h3 mb-0">{{ student.full_name }}</h1>
+      <div class="text-muted">{{ student.roll_no }} &middot; {{ student.hostel.name }}</div>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary" href="{% url 'fees:manage' %}">All students</a>
+      <a class="btn btn-primary" href="{% url 'fees:fee_create' student.pk %}">Define fee</a>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-md-3"><div class="card card-body py-2"><div class="text-muted small">Total fee</div><div class="h5 mb-0">{{ summary.total|money }}</div></div></div>
+    <div class="col-6 col-md-3"><div class="card card-body py-2"><div class="text-muted small">Amount paid</div><div class="h5 mb-0">{{ summary.paid|money }}</div></div></div>
+    <div class="col-6 col-md-3"><div class="card card-body py-2"><div class="text-muted small">Outstanding balance</div><div class="h5 mb-0">{{ summary.outstanding|money }}</div></div></div>
+    <div class="col-6 col-md-3"><div class="card card-body py-2"><div class="text-muted small">Status</div><div class="h5 mb-0"><span class="badge text-bg-{{ summary.css }}">{{ summary.label }}</span></div></div></div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle bg-white">
+      <thead><tr><th>Academic year</th><th>Description</th><th>Due date</th><th class="text-end">Amount</th><th class="text-end">Paid</th><th class="text-end">Outstanding</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+      <tbody>
+        {% for fee in summary.fees %}
+          <tr>
+            <td>{{ fee.academic_year }}</td>
+            <td>{{ fee.description }}</td>
+            <td>{{ fee.due_date|date:"j M Y"|default:"-" }}</td>
+            <td class="text-end">{{ fee.amount_due|money }}</td>
+            <td class="text-end">{{ fee.paid|money }}</td>
+            <td class="text-end">{{ fee.outstanding|money }}</td>
+            <td><span class="badge text-bg-{{ fee.status_class }}">{{ fee.status_label }}</span></td>
+            <td class="text-end">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'fees:fee_edit' fee.pk %}">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="8" class="text-center text-muted py-4">No fee has been defined for this student yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

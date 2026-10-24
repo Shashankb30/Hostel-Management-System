@@ -20,6 +20,9 @@ MESSAGES = {
     'unique': '{field} already exists',
     'invalid_format': '{field} format is invalid',
     'invalid_phone': 'Phone number must be exactly 10 digits',
+    'fee_duplicate': 'A fee with this academic year and description already exists for the student',
+    'fee_below_paid': 'Fee amount cannot be lower than the amount already paid ({paid})',
+    'max_decimals': '{field} can have at most 2 decimal places',
     'max_length': '{field} must be at most {limit} characters',
     'invalid_choice': '{field} is not a valid choice',
     # Business messages taken from the Test Plan
