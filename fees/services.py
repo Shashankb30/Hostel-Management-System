@@ -185,3 +185,17 @@ def balance_after(payment):
         Q(paid_on__lt=payment.paid_on) | Q(paid_on=payment.paid_on, pk__lte=payment.pk)
     ).aggregate(total=Sum('amount'))['total'] or ZERO
     return max(fee.amount_due - until_now, ZERO)
+
+
+def payment_history(student):
+    """Every payment of a student, oldest first, each with its receipt number and balance after."""
+    payments = (Payment.objects.filter(fee_record__student=student)
+                .select_related('fee_record', 'received_by__user').order_by('paid_on', 'pk'))
+    running = defaultdict(lambda: ZERO)
+    history = []
+    for payment in payments:
+        running[payment.fee_record_id] += payment.amount
+        payment.receipt_no = receipt_number(payment)
+        payment.balance_after = max(payment.fee_record.amount_due - running[payment.fee_record_id], ZERO)
+        history.append(payment)
+    return history

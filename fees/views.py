@@ -50,6 +50,7 @@ def student_fees(request, student_id):
     student = get_object_or_404(Student.objects.select_related('hostel'), pk=student_id)
     return render(request, 'fees/student_fees.html', {
         'student': student, 'summary': services.student_summary(student),
+        'history': services.payment_history(student),
     })
 
 
@@ -129,4 +130,15 @@ def receipt(request, payment_id):
         'payment': payment, 'fee': fee, 'student': fee.student,
         'receipt_no': services.receipt_number(payment),
         'balance_after': services.balance_after(payment),
+    })
+
+
+@STUDENT_ONLY
+def my_fees(request):
+    """The student's own fee status, balance and payment history (FR-05.09, FR-05.10)."""
+    student = _own_student(request)
+    return render(request, 'fees/my_fees.html', {
+        'student': student,
+        'summary': services.student_summary(student) if student else None,
+        'history': services.payment_history(student) if student else [],
     })

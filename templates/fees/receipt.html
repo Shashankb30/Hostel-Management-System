@@ -27,6 +27,6 @@
   </div>
   <div class="mt-3 d-flex gap-2">
     <button type="button" class="btn btn-outline-secondary" onclick="window.print()">Print</button>
-    {% if hms_role == 'admin' %}<a class="btn btn-primary" href="{% url 'fees:student_fees' student.pk %}">Back to student fees</a>{% endif %}
+    {% if hms_role == 'admin' %}<a class="btn btn-primary" href="{% url 'fees:student_fees' student.pk %}">Back to student fees</a>{% else %}<a class="btn btn-primary" href="{% url 'fees:my_fees' %}">Back to my fees</a>{% endif %}
   </div>
 {% endblock %}
