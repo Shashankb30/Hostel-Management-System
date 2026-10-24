@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load fees_extras %}
+{% block title %}Receipt {{ receipt_no }} - HMS{% endblock %}
+{% block content %}
+  <div class="card shadow-sm" style="max-width: 38rem;">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h1 class="h4 mb-0">Payment receipt</h1>
+          <div class="text-muted">{{ fee.hostel.name }}</div>
+        </div>
+        <div class="text-end"><div class="text-muted small">Receipt no.</div><div class="h5 mb-0">{{ receipt_no }}</div></div>
+      </div>
+      <hr>
+      <dl class="row mb-0">
+        <dt class="col-5">Student</dt><dd class="col-7">{{ student.full_name }} ({{ student.roll_no }})</dd>
+        <dt class="col-5">Fee</dt><dd class="col-7">{{ fee.description }}, {{ fee.academic_year }}</dd>
+        <dt class="col-5">Payment date</dt><dd class="col-7">{{ payment.paid_on|date:"j M Y" }}</dd>
+        <dt class="col-5">Payment mode</dt><dd class="col-7">{{ payment.get_mode_display }}</dd>
+        {% if payment.reference %}<dt class="col-5">Reference</dt><dd class="col-7">{{ payment.reference }}</dd>{% endif %}
+        <dt class="col-5">Amount paid</dt><dd class="col-7 fw-bold">{{ payment.amount|money }}</dd>
+        <dt class="col-5">Fee total</dt><dd class="col-7">{{ fee.amount_due|money }}</dd>
+        <dt class="col-5">Balance after this payment</dt><dd class="col-7">{{ balance_after|money }}</dd>
+        {% if payment.received_by %}<dt class="col-5">Received by</dt><dd class="col-7">{{ payment.received_by.user.get_full_name|default:payment.received_by.user.username }}</dd>{% endif %}
+      </dl>
+    </div>
+  </div>
+  <div class="mt-3 d-flex gap-2">
+    <button type="button" class="btn btn-outline-secondary" onclick="window.print()">Print</button>
+    {% if hms_role == 'admin' %}<a class="btn btn-primary" href="{% url 'fees:student_fees' student.pk %}">Back to student fees</a>{% else %}<a class="btn btn-primary" href="{% url 'fees:my_fees' %}">Back to my fees</a>{% endif %}
+  </div>
+{% endblock %}

@@ -20,6 +20,13 @@ MESSAGES = {
     'unique': '{field} already exists',
     'invalid_format': '{field} format is invalid',
     'invalid_phone': 'Phone number must be exactly 10 digits',
+    'duplicate_payment': 'This payment was already submitted; check the payment history before saving it again',
+    'payment_exceeds_balance': 'Payment amount cannot exceed the outstanding balance of {balance}',
+    'fee_already_paid': 'This fee is already fully paid',
+    'payment_date_future': 'Payment date cannot be in the future',
+    'fee_duplicate': 'A fee with this academic year and description already exists for the student',
+    'fee_below_paid': 'Fee amount cannot be lower than the amount already paid ({paid})',
+    'max_decimals': '{field} can have at most 2 decimal places',
     'max_length': '{field} must be at most {limit} characters',
     'invalid_choice': '{field} is not a valid choice',
     # Business messages taken from the Test Plan

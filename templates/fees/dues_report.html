@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load fees_extras %}
+{% block title %}Outstanding Dues - HMS{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Outstanding dues</h1>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary" href="{% url 'fees:manage' %}">Fee Management</a>
+      <a class="btn btn-outline-primary" href="{% url 'fees:dues_report' %}?format=csv{% if overdue_only %}&amp;overdue=1{% endif %}">Download CSV</a>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
+    <div class="btn-group" role="group" aria-label="Filter">
+      <a class="btn btn-sm {% if not overdue_only %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% url 'fees:dues_report' %}">All dues</a>
+      <a class="btn btn-sm {% if overdue_only %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% url 'fees:dues_report' %}?overdue=1">Overdue only</a>
+    </div>
+    <div class="ms-auto"><span class="text-muted">Total outstanding</span> <strong>{{ total|money }}</strong></div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle bg-white">
+      <thead><tr><th>Roll no</th><th>Student</th><th>Fee</th><th>Due date</th><th class="text-end">Amount</th><th class="text-end">Paid</th><th class="text-end">Outstanding</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for fee in rows %}
+          <tr>
+            <td>{{ fee.student.roll_no }}</td>
+            <td><a href="{% url 'fees:student_fees' fee.student.pk %}">{{ fee.student.full_name }}</a></td>
+            <td>{{ fee.description }} ({{ fee.academic_year }})</td>
+            <td>{{ fee.due_date|date:"j M Y"|default:"-" }}</td>
+            <td class="text-end">{{ fee.amount_due|money }}</td>
+            <td class="text-end">{{ fee.paid|money }}</td>
+            <td class="text-end">{{ fee.outstanding|money }}</td>
+            <td>
+              <span class="badge text-bg-{{ fee.status_class }}">{{ fee.status_label }}</span>
+              {% if fee.overdue %}<span class="badge text-bg-danger">Overdue</span>{% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="8" class="text-center text-muted py-4">No outstanding dues.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
