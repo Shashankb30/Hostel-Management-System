@@ -1,9 +1,10 @@
 """Fee screens (FR-05, Issues #67 to #79)."""
+import csv
 import secrets
 
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from core.error_messages import msg
@@ -172,3 +173,23 @@ def my_fees(request):
         'summary': services.student_summary(student) if student else None,
         'history': services.payment_history(student) if student else [],
     })
+
+
+@ADMIN_ONLY
+def dues_report(request):
+    """Outstanding dues: every fee with a balance, largest first (FR-05.13)."""
+    overdue_only = request.GET.get('overdue') == '1'
+    rows, total = services.dues_report(overdue_only=overdue_only)
+    if request.GET.get('format') == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="outstanding-dues.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['Roll no', 'Student', 'Hostel', 'Fee', 'Academic year', 'Due date',
+                         'Amount due', 'Paid', 'Outstanding', 'Overdue'])
+        for fee in rows:
+            writer.writerow([fee.student.roll_no, fee.student.full_name, fee.hostel.code,
+                             fee.description, fee.academic_year, fee.due_date or '',
+                             fee.amount_due, fee.paid, fee.outstanding, 'yes' if fee.overdue else 'no'])
+        return response
+    return render(request, 'fees/dues_report.html',
+                  {'rows': rows, 'total': total, 'overdue_only': overdue_only})

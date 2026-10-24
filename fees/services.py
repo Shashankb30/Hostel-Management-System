@@ -213,3 +213,19 @@ def payment_history(student):
         payment.balance_after = max(payment.fee_record.amount_due - running[payment.fee_record_id], ZERO)
         history.append(payment)
     return history
+
+
+def dues_report(*, overdue_only=False):
+    """Fees that still have a balance, largest balance first, with the overall total (FR-05.13)."""
+    today = timezone.localdate()
+    rows = []
+    for fee in fees_with_paid().filter(student__is_active=True):
+        describe_fee(fee)
+        if fee.outstanding <= 0:
+            continue
+        fee.overdue = bool(fee.due_date and fee.due_date < today)
+        if overdue_only and not fee.overdue:
+            continue
+        rows.append(fee)
+    rows.sort(key=lambda fee: (-fee.outstanding, fee.student.roll_no, fee.pk))
+    return rows, sum((fee.outstanding for fee in rows), ZERO)
