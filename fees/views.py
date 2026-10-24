@@ -1,12 +1,13 @@
 """Fee screens (FR-05, Issues #67 to #79)."""
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
 from core.error_messages import msg
 from core.feedback import flash_errors
-from core.models import FeeRecord, Student, UserAccount
-from core.roles import get_account, role_required
+from core.models import FeeRecord, Payment, Student, UserAccount
+from core.roles import get_account, get_role, role_required
 
 from . import services
 from .forms import FeeForm, PaymentForm
@@ -108,6 +109,24 @@ def payment_create(request, fee_id):
             flash_errors(request, exc)
         else:
             messages.success(request, f'Payment of {services.money(payment.amount)} recorded')
-            return redirect('fees:student_fees', student_id=fee.student_id)
+            return redirect('fees:receipt', payment_id=payment.pk)
     return render(request, 'fees/payment_form.html',
                   {'form': form, 'fee': fee, 'student': fee.student, 'balance': balance})
+
+
+@role_required(UserAccount.ROLE_ADMIN, UserAccount.ROLE_STUDENT)
+def receipt(request, payment_id):
+    """Receipt for one payment. A student may only open their own."""
+    payment = get_object_or_404(
+        Payment.objects.select_related('fee_record', 'fee_record__student', 'fee_record__hostel',
+                                       'received_by__user'), pk=payment_id)
+    fee = payment.fee_record
+    if get_role(request.user) == UserAccount.ROLE_STUDENT:
+        own = _own_student(request)
+        if own is None or own.pk != fee.student_id:
+            raise Http404
+    return render(request, 'fees/receipt.html', {
+        'payment': payment, 'fee': fee, 'student': fee.student,
+        'receipt_no': services.receipt_number(payment),
+        'balance_after': services.balance_after(payment),
+    })

@@ -171,3 +171,17 @@ def record_payment(fee, *, amount, mode, paid_on=None, reference='', received_by
                                   code='payment_exceeds_balance')
         return Payment.objects.create(fee_record=locked, amount=amount, paid_on=paid_on, mode=mode,
                                       reference=reference, received_by=received_by)
+
+
+def receipt_number(payment):
+    """Receipt number for a payment, for example RCP-000123. Derived from the payment id."""
+    return f'RCP-{payment.pk:06d}'
+
+
+def balance_after(payment):
+    """What was still owed on the fee right after this payment (receipts and history)."""
+    fee = payment.fee_record
+    until_now = fee.payments.filter(
+        Q(paid_on__lt=payment.paid_on) | Q(paid_on=payment.paid_on, pk__lte=payment.pk)
+    ).aggregate(total=Sum('amount'))['total'] or ZERO
+    return max(fee.amount_due - until_now, ZERO)
