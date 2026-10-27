@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Edit complaint - HMS{% endblock %}
+{% block content %}
+  <p class="mb-2"><a href="{% url 'complaints:detail' complaint.pk %}">&larr; {{ complaint.complaint_id }}</a></p>
+  <h1 class="h3 mb-3">Edit complaint {{ complaint.complaint_id }}</h1>
+  <div class="card shadow-sm" style="max-width: 36rem;"><div class="card-body">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label" for="category">Category</label>
+        <select class="form-select" id="category" name="category">
+          {% for value, label in categories %}
+            <option value="{{ value }}"{% if form.category == value %} selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="description">Description</label>
+        <textarea class="form-control" id="description" name="description" rows="6" maxlength="2000">{{ form.description }}</textarea>
+      </div>
+      <button class="btn btn-primary" type="submit">Save changes</button>
+      <a class="btn btn-link" href="{% url 'complaints:detail' complaint.pk %}">Cancel</a>
+    </form>
+  </div></div>
+{% endblock %}

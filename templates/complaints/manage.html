@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Complaints - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">Complaints</h1>
+  {% include 'complaints/_tabs.html' with tab='all' %}
+
+  <div class="row g-2 mb-3">
+    <div class="col-6 col-md-3"><a class="text-decoration-none" href="?status=open"><div class="card shadow-sm"><div class="card-body py-2"><div class="text-muted small">Open</div><div class="h4 mb-0">{{ counts.open }}</div></div></div></a></div>
+    <div class="col-6 col-md-3"><a class="text-decoration-none" href="?status=under_review"><div class="card shadow-sm"><div class="card-body py-2"><div class="text-muted small">Under Review</div><div class="h4 mb-0">{{ counts.under_review }}</div></div></div></a></div>
+    <div class="col-6 col-md-3"><a class="text-decoration-none" href="?status=resolved"><div class="card shadow-sm"><div class="card-body py-2"><div class="text-muted small">Resolved</div><div class="h4 mb-0">{{ counts.resolved }}</div></div></div></a></div>
+    <div class="col-6 col-md-3"><a class="text-decoration-none" href="?escalated=1"><div class="card shadow-sm"><div class="card-body py-2"><div class="text-muted small">Escalated</div><div class="h4 mb-0">{{ counts.escalated }}</div></div></div></a></div>
+  </div>
+
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-6 col-md-2">
+      <label class="form-label" for="status">Status</label>
+      <select class="form-select" id="status" name="status">
+        <option value="">All</option>
+        {% for value, label in statuses %}<option value="{{ value }}"{% if filters.status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-md-2">
+      <label class="form-label" for="category">Category</label>
+      <select class="form-select" id="category" name="category">
+        <option value="">All</option>
+        {% for value, label in categories %}<option value="{{ value }}"{% if filters.category == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-md-2">
+      <label class="form-label" for="kind">Type</label>
+      <select class="form-select" id="kind" name="kind">
+        <option value="">All</option>
+        {% for value, label in kinds %}<option value="{{ value }}"{% if filters.kind == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label" for="q">Search</label>
+      <input class="form-control" id="q" name="q" value="{{ filters.q }}" placeholder="Name, roll no or text">
+    </div>
+    <div class="col-12 col-md-3 d-flex align-items-end gap-2">
+      <div class="form-check me-2">
+        <input class="form-check-input" type="checkbox" id="escalated" name="escalated" value="1"{% if filters.escalated %} checked{% endif %}>
+        <label class="form-check-label" for="escalated">Escalated only</label>
+      </div>
+      <button class="btn btn-primary" type="submit">Filter</button>
+      <a class="btn btn-link" href="{% url 'complaints:manage' %}">Clear</a>
+    </div>
+  </form>
+
+  {% if complaints %}
+    <div class="table-responsive">
+      <table class="table table-sm table-striped align-middle bg-white">
+        <thead><tr><th>ID</th><th>Student</th><th>Type</th><th>Category</th><th>Subject</th><th>Severity</th><th>Status</th><th>Raised</th><th></th></tr></thead>
+        <tbody>
+          {% for c in complaints %}
+            <tr>
+              <td>{{ c.complaint_id }}{% if c.is_escalated %} <span class="badge text-bg-dark">Escalated</span>{% endif %}</td>
+              <td>{{ c.student.full_name }}<br><small class="text-muted">{{ c.student.roll_no }}</small></td>
+              <td>{{ c.get_kind_display }}</td>
+              <td>{{ c.get_category_display }}</td>
+              <td>{{ c.title }}</td>
+              <td>{{ c.get_severity_display|default:"-" }}</td>
+              <td>{% include 'complaints/_status_badge.html' %}</td>
+              <td>{{ c.created_at|date:"j M Y" }}</td>
+              <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'complaints:detail' c.pk %}">Open</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info">No complaints match these filters.</div>
+  {% endif %}
+{% endblock %}
