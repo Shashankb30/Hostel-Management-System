@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Attendance report - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">Attendance</h1>
+  {% include 'attendance/_tabs.html' with tab='report' %}
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-6 col-md-3"><label class="form-label" for="start">From</label><input class="form-control" type="date" id="start" name="start" value="{{ start }}"></div>
+    <div class="col-6 col-md-3"><label class="form-label" for="end">To</label><input class="form-control" type="date" id="end" name="end" value="{{ end }}"></div>
+    <div class="col-12 col-md-3">
+      <label class="form-label" for="student">Student</label>
+      <select class="form-select" id="student" name="student">
+        <option value="">All students</option>
+        {% for s in students %}<option value="{{ s.pk }}"{% if chosen and chosen.pk == s.pk %} selected{% endif %}>{{ s.roll_no }} - {{ s.full_name }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-12 col-md-3 d-flex align-items-end gap-2">
+      <button class="btn btn-primary" type="submit">Generate report</button>
+      <button class="btn btn-outline-secondary" type="submit" name="export" value="csv">Download CSV</button>
+    </div>
+  </form>
+
+  {% if result.rows %}
+    <p class="text-muted">{{ result.total }} entr{{ result.total|pluralize:"y,ies" }} between {{ start }} and {{ end }}.</p>
+    <div class="row g-3">
+      <div class="col-12 col-lg-8">
+        <div class="table-responsive">
+          <table class="table table-sm table-striped align-middle bg-white">
+            <thead><tr><th>Date</th><th>Student</th><th>Check-in</th><th>Check-out</th><th>Duration</th></tr></thead>
+            <tbody>
+              {% for r in result.rows %}
+                <tr>
+                  <td>{{ r.attendance_date|date:"j M Y" }}</td>
+                  <td>{{ r.student.full_name }} <small class="text-muted">{{ r.student.roll_no }}</small></td>
+                  <td>{{ r.check_in_at|date:"h:i A" }}</td>
+                  <td>{% if r.check_out_at %}{{ r.check_out_at|date:"j M, h:i A" }}{% else %}-{% endif %}</td>
+                  <td>{{ r.duration|default:"-" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="table-responsive">
+          <table class="table table-sm bg-white">
+            <thead><tr><th>Student</th><th class="text-end">Days present</th></tr></thead>
+            <tbody>{% for e in result.per_student %}<tr><td>{{ e.student.full_name }}</td><td class="text-end">{{ e.days }}</td></tr>{% endfor %}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-info">No attendance was recorded between {{ start }} and {{ end }}.</div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Attendance history - HMS{% endblock %}
+{% block content %}
+  {% if is_staff_view %}<p class="mb-2"><a href="{% url 'attendance:manage' %}">&larr; Daily attendance</a></p>{% endif %}
+  <h1 class="h3 mb-3">{% if is_staff_view %}Attendance history: {{ student.full_name }} <small class="text-muted">{{ student.roll_no }}</small>{% else %}My Attendance{% endif %}</h1>
+  {% if student %}
+    {% include 'attendance/_history_table.html' %}
+  {% else %}
+    <div class="alert alert-info" role="alert">Your student record has not been created yet. Please contact the administrator.</div>
+  {% endif %}
+{% endblock %}

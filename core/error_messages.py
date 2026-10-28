@@ -53,6 +53,12 @@ MESSAGES = {
     'capacity_below_occupancy': 'Capacity cannot be lower than the {occupied} student(s) currently in the room',
     'no_active_checkin': 'No active check-in exists',
     'already_checked_out': 'Already checked out',
+    'no_room_for_attendance': 'Attendance can only be recorded for students with an allocated room',
+    'duplicate_checkin': 'Student is already checked in since {since}; check out first',
+    'attendance_day_complete': 'Attendance for {day} is already complete',
+    'checkout_before_checkin': 'Check-out time cannot be before the check-in time ({since})',
+    'future_time': '{field} cannot be in the future',
+    'select_students': 'Select at least one student',
 }
 
 
