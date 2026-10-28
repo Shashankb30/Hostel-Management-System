@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     'students.apps.StudentsConfig',
     'rooms.apps.RoomsConfig',
     'allocation.apps.AllocationConfig',
+    'attendance.apps.AttendanceConfig',
     'complaints.apps.ComplaintsConfig',
     'fees.apps.FeesConfig',
 ]

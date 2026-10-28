@@ -1,0 +1,19 @@
+{% if records %}
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle bg-white">
+      <thead><tr><th>Date</th><th>Check-in</th><th>Check-out</th><th>Duration</th></tr></thead>
+      <tbody>
+        {% for r in records %}
+          <tr>
+            <td>{{ r.attendance_date|date:"D, j M Y" }}</td>
+            <td>{{ r.check_in_at|date:"j M, h:i A" }}</td>
+            <td>{% if r.check_out_at %}{{ r.check_out_at|date:"j M, h:i A" }}{% else %}<span class="badge text-bg-warning">Not checked out</span>{% endif %}</td>
+            <td>{{ r.duration|default:"-" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="alert alert-info mb-0">No attendance has been recorded yet.</div>
+{% endif %}
