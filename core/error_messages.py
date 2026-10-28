@@ -59,6 +59,12 @@ MESSAGES = {
     'checkout_before_checkin': 'Check-out time cannot be before the check-in time ({since})',
     'future_time': '{field} cannot be in the future',
     'select_students': 'Select at least one student',
+    'complaint_locked': 'A resolved complaint cannot be edited; reopen it first',
+    'complaint_not_resolved': 'Only a resolved complaint can be reopened',
+    'invalid_status_change': 'A complaint cannot move from {old} to {new}',
+    'misconduct_only': 'Demerit points can only be assigned to a misconduct case',
+    'already_escalated': 'Complaint is already escalated to the administrator',
+    'no_demerit_rule': 'No demerit rule is set for {severity} severity',
 }
 
 

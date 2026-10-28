@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     'rooms.apps.RoomsConfig',
     'allocation.apps.AllocationConfig',
     'attendance.apps.AttendanceConfig',
+    'complaints.apps.ComplaintsConfig',
     'fees.apps.FeesConfig',
 ]
 MIDDLEWARE = [

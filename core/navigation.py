@@ -45,6 +45,7 @@ MENUS = {
         NavItem('Rooms', 'rooms:manage'),
         NavItem('Fees', 'fees:manage'),
         NavItem('Attendance', 'attendance:manage'),
+        NavItem('Complaints', 'complaints:manage'),
         NavItem('Notices', 'notices:manage'),
         NavItem('Reports', 'core:reports'),
         NavItem('Admin Site', 'admin:index'),

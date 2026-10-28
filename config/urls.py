@@ -10,6 +10,7 @@ urlpatterns = [
     path('rooms/', include('rooms.urls')),
     path('allocation/', include('allocation.urls')),
     path('attendance/', include('attendance.urls')),
+    path('complaints/', include('complaints.urls')),
     path('fees/', include('fees.urls')),
     path('', include('core.urls')),
 ]

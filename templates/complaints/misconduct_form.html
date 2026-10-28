@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Log misconduct - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">Complaints</h1>
+  {% include 'complaints/_tabs.html' with tab='misconduct' %}
+  <div class="row g-3">
+    <div class="col-12 col-lg-7">
+      <div class="card shadow-sm"><div class="card-body">
+        <h2 class="h5">Log a misconduct case</h2>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label" for="student">Student</label>
+            <select class="form-select" id="student" name="student">
+              <option value="">Select a student...</option>
+              {% for s in students %}<option value="{{ s.pk }}"{% if form.student == s.pk|stringformat:"s" %} selected{% endif %}>{{ s.roll_no }} - {{ s.full_name }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="row">
+            <div class="col-12 col-md-6 mb-3">
+              <label class="form-label" for="severity">Severity</label>
+              <select class="form-select" id="severity" name="severity">
+                <option value="">Select severity...</option>
+                {% for value, label in severities %}<option value="{{ value }}"{% if form.severity == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-12 col-md-6 mb-3">
+              <label class="form-label" for="category">Category</label>
+              <select class="form-select" id="category" name="category">
+                {% for value, label in categories %}<option value="{{ value }}"{% if form.category == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="title">Subject <span class="text-muted">(optional)</span></label>
+            <input class="form-control" id="title" name="title" maxlength="160" value="{{ form.title }}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="description">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="5" maxlength="2000">{{ form.description }}</textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">Log case</button>
+        </form>
+      </div></div>
+    </div>
+    <div class="col-12 col-lg-5">
+      <div class="card shadow-sm"><div class="card-body">
+        <h2 class="h5">Points per severity</h2>
+        <ul class="list-group list-group-flush">
+          {% for r in rules %}<li class="list-group-item px-0 d-flex justify-content-between"><span>{{ r.get_severity_display }}</span><strong>{{ r.points }}</strong></li>{% endfor %}
+        </ul>
+        <p class="text-muted small mt-2 mb-0">The points are added to the student's total automatically.</p>
+      </div></div>
+    </div>
+  </div>
+{% endblock %}
