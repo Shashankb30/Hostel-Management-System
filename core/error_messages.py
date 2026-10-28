@@ -53,6 +53,12 @@ MESSAGES = {
     'capacity_below_occupancy': 'Capacity cannot be lower than the {occupied} student(s) currently in the room',
     'no_active_checkin': 'No active check-in exists',
     'already_checked_out': 'Already checked out',
+    'complaint_locked': 'A resolved complaint cannot be edited; reopen it first',
+    'complaint_not_resolved': 'Only a resolved complaint can be reopened',
+    'invalid_status_change': 'A complaint cannot move from {old} to {new}',
+    'misconduct_only': 'Demerit points can only be assigned to a misconduct case',
+    'already_escalated': 'Complaint is already escalated to the administrator',
+    'no_demerit_rule': 'No demerit rule is set for {severity} severity',
 }
 
 

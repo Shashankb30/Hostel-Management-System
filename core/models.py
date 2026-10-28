@@ -151,16 +151,77 @@ class Payment(TimeStampedModel):
 
 
 class Complaint(TimeStampedModel):
-    STATUS_CHOICES = [('open', 'Open'), ('investigating', 'Investigating'), ('resolved', 'Resolved'), ('rejected', 'Rejected')]
-    SEVERITY_CHOICES = [('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('critical', 'Critical')]
+    """A student complaint (FR-06.01) or a misconduct case logged by staff (FR-06.03).
+
+    ``student`` is the student concerned: the person who complained, or, for a misconduct
+    case, the person it is about. Demerit points only ever attach to misconduct cases.
+    """
+    KIND_COMPLAINT = 'complaint'
+    KIND_MISCONDUCT = 'misconduct'
+    KIND_CHOICES = [(KIND_COMPLAINT, 'Complaint'), (KIND_MISCONDUCT, 'Misconduct case')]
+
+    CATEGORY_CHOICES = [('maintenance', 'Maintenance'), ('discipline', 'Discipline'),
+                        ('food', 'Food'), ('other', 'Other')]
+
+    STATUS_OPEN = 'open'
+    STATUS_UNDER_REVIEW = 'under_review'
+    STATUS_RESOLVED = 'resolved'
+    STATUS_CHOICES = [(STATUS_OPEN, 'Open'), (STATUS_UNDER_REVIEW, 'Under Review'),
+                      (STATUS_RESOLVED, 'Resolved')]
+
+    SEVERITY_CHOICES = [('minor', 'Minor'), ('moderate', 'Moderate'), ('major', 'Major')]
+
     student = models.ForeignKey(Student, on_delete=models.PROTECT, related_name='complaints')
     hostel = models.ForeignKey(Hostel, on_delete=models.PROTECT, related_name='complaints')
+    kind = models.CharField(max_length=12, choices=KIND_CHOICES, default=KIND_COMPLAINT, db_index=True)
+    category = models.CharField(max_length=16, choices=CATEGORY_CHOICES, default='other', db_index=True)
     title = models.CharField(max_length=160)
     description = models.TextField()
-    severity = models.CharField(max_length=12, choices=SEVERITY_CHOICES, default='medium')
-    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default='open', db_index=True)
+    severity = models.CharField(max_length=12, choices=SEVERITY_CHOICES, blank=True, default='')
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_OPEN, db_index=True)
+    remarks = models.TextField(blank=True)
+    raised_by = models.ForeignKey(UserAccount, null=True, blank=True, on_delete=models.SET_NULL, related_name='complaints_raised')
+    is_escalated = models.BooleanField(default=False, db_index=True)
+    escalation_reason = models.CharField(max_length=240, blank=True)
     resolved_by = models.ForeignKey(UserAccount, null=True, blank=True, on_delete=models.SET_NULL, related_name='complaints_resolved')
     resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at', '-id']
+        constraints = [
+            models.CheckConstraint(condition=~Q(description=''), name='ck_complaint_description_not_blank'),
+        ]
+
+    def __str__(self): return f'#{self.pk} {self.title}'
+
+    @property
+    def complaint_id(self):
+        """The unique complaint ID people see, for example CMP00012 (UT_16_Comp)."""
+        return f'CMP{self.pk:05d}' if self.pk is not None else ''
+
+
+class DemeritRule(TimeStampedModel):
+    """Points awarded for each misconduct severity (FR-06.05). Editable by staff."""
+    severity = models.CharField(max_length=12, choices=Complaint.SEVERITY_CHOICES, unique=True)
+    points = models.PositiveSmallIntegerField(validators=[MaxValueValidator(100)])
+    description = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        ordering = ['points', 'id']
+
+    def __str__(self): return f'{self.get_severity_display()}: {self.points} point(s)'
+
+
+class ComplaintUpdate(TimeStampedModel):
+    """One entry in a complaint's history: every status change with its remarks (FR-06.08)."""
+    complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, related_name='updates')
+    old_status = models.CharField(max_length=16, blank=True, choices=Complaint.STATUS_CHOICES)
+    new_status = models.CharField(max_length=16, choices=Complaint.STATUS_CHOICES)
+    remarks = models.TextField(blank=True)
+    changed_by = models.ForeignKey(UserAccount, null=True, blank=True, on_delete=models.SET_NULL, related_name='complaint_updates')
+
+    class Meta:
+        ordering = ['created_at', 'id']
 
 
 class DemeritRecord(TimeStampedModel):

@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     'students.apps.StudentsConfig',
     'rooms.apps.RoomsConfig',
     'allocation.apps.AllocationConfig',
+    'complaints.apps.ComplaintsConfig',
     'fees.apps.FeesConfig',
 ]
 MIDDLEWARE = [

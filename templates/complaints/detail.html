@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Complaint {{ complaint.complaint_id }} - HMS{% endblock %}
+{% block content %}
+  {% with c=complaint %}
+  <p class="mb-2">
+    {% if is_staff_view %}<a href="{% url 'complaints:manage' %}">&larr; All complaints</a>
+    {% else %}<a href="{% url 'complaints:my_complaints' %}">&larr; My complaints</a>{% endif %}
+  </p>
+  <h1 class="h3 mb-3">{{ c.complaint_id }}: {{ c.title }}</h1>
+
+  <div class="row g-3">
+    <div class="col-12 col-lg-7">
+      <div class="card shadow-sm mb-3"><div class="card-body">
+        <p class="mb-2">{% include 'complaints/_status_badge.html' %}
+          <span class="badge text-bg-light border">{{ c.get_kind_display }}</span>
+          <span class="badge text-bg-light border">{{ c.get_category_display }}</span>
+          {% if c.severity %}<span class="badge text-bg-danger">{{ c.get_severity_display }} severity</span>{% endif %}
+          {% if c.is_escalated %}<span class="badge text-bg-dark">Escalated</span>{% endif %}
+        </p>
+        <dl class="row mb-3">
+          <dt class="col-4">Student</dt><dd class="col-8">{{ c.student.full_name }} ({{ c.student.roll_no }})</dd>
+          <dt class="col-4">Raised</dt><dd class="col-8">{{ c.created_at|date:"j M Y, H:i" }}</dd>
+          {% if c.is_escalated %}<dt class="col-4">Escalation</dt><dd class="col-8">{{ c.escalation_reason }}</dd>{% endif %}
+          {% if c.status == 'resolved' %}<dt class="col-4">Resolved</dt><dd class="col-8">{{ c.resolved_at|date:"j M Y, H:i" }}</dd>{% endif %}
+          {% if c.remarks %}<dt class="col-4">Latest remarks</dt><dd class="col-8">{{ c.remarks }}</dd>{% endif %}
+        </dl>
+        <h2 class="h6">Description</h2>
+        <p style="white-space: pre-wrap;">{{ c.description }}</p>
+        {% if is_staff_view and c.kind == 'misconduct' %}
+          <p class="mb-0 text-muted">Demerit total for {{ c.student.full_name }}: <strong>{{ demerit_total }}</strong></p>
+        {% endif %}
+        {% if can_edit %}
+          <a class="btn btn-outline-primary mt-3" href="{% url 'complaints:edit' c.pk %}">Edit complaint</a>
+        {% elif not is_staff_view and c.status == 'resolved' and c.kind == 'complaint' %}
+          <div class="alert alert-secondary mt-3 mb-0">This complaint is resolved and locked. Ask the warden to reopen it if the problem is not fixed.</div>
+        {% endif %}
+      </div></div>
+
+      <div class="card shadow-sm"><div class="card-body">
+        <h2 class="h5">History</h2>
+        <ul class="list-group list-group-flush">
+          {% for u in updates %}
+            <li class="list-group-item px-0">
+              <strong>{% if u.new_status != u.old_status %}{{ u.get_new_status_display }}{% else %}Note{% endif %}</strong>
+              <small class="text-muted">{{ u.created_at|date:"j M Y, H:i" }}{% if is_staff_view and u.changed_by %} by {{ u.changed_by.user.get_username }}{% endif %}</small>
+              {% if u.remarks %}<br>{{ u.remarks }}{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div></div>
+    </div>
+
+    {% if is_staff_view %}
+    <div class="col-12 col-lg-5">
+      {% if c.status == 'resolved' %}
+        <div class="card shadow-sm mb-3"><div class="card-body">
+          <h2 class="h5">Reopen</h2>
+          <p class="text-muted">A resolved complaint is locked. Reopen it to work on it again.</p>
+          <form method="post" action="{% url 'complaints:reopen' c.pk %}">
+            {% csrf_token %}
+            <label class="form-label" for="reopen-remarks">Remarks</label>
+            <textarea class="form-control mb-2" id="reopen-remarks" name="remarks" rows="3" maxlength="1000"></textarea>
+            <button class="btn btn-warning" type="submit">Reopen complaint</button>
+          </form>
+        </div></div>
+      {% else %}
+        <div class="card shadow-sm mb-3"><div class="card-body">
+          <h2 class="h5">Update status</h2>
+          <form method="post" action="{% url 'complaints:update_status' c.pk %}">
+            {% csrf_token %}
+            <label class="form-label" for="status">New status</label>
+            <select class="form-select mb-2" id="status" name="status">
+              {% for value, label in status_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+            </select>
+            <label class="form-label" for="remarks">Remarks <span class="text-muted">(required to resolve)</span></label>
+            <textarea class="form-control mb-2" id="remarks" name="remarks" rows="3" maxlength="1000"></textarea>
+            <button class="btn btn-primary" type="submit">Save status</button>
+          </form>
+        </div></div>
+      {% endif %}
+
+      {% if not c.is_escalated %}
+        <div class="card shadow-sm"><div class="card-body">
+          <h2 class="h5">Escalate to the administrator</h2>
+          <form method="post" action="{% url 'complaints:escalate' c.pk %}">
+            {% csrf_token %}
+            <label class="form-label" for="reason">Reason</label>
+            <input class="form-control mb-2" id="reason" name="reason" maxlength="240">
+            <button class="btn btn-outline-danger" type="submit">Escalate</button>
+          </form>
+        </div></div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  {% endwith %}
+{% endblock %}
