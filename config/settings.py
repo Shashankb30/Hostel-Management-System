@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'attendance.apps.AttendanceConfig',
     'complaints.apps.ComplaintsConfig',
     'fees.apps.FeesConfig',
+    'visitors.apps.VisitorsConfig',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

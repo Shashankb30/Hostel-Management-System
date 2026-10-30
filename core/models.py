@@ -254,12 +254,28 @@ class VisitorLog(TimeStampedModel):
     hostel = models.ForeignKey(Hostel, on_delete=models.PROTECT, related_name='visitor_logs')
     visitor_name = models.CharField(max_length=160)
     visitor_phone = models.CharField(max_length=20, blank=True)
+    id_proof = models.CharField(max_length=50, blank=True, default='')
     purpose = models.CharField(max_length=240, blank=True)
     checked_in_at = models.DateTimeField()
     checked_out_at = models.DateTimeField(null=True, blank=True)
     recorded_by = models.ForeignKey(UserAccount, null=True, blank=True, on_delete=models.SET_NULL, related_name='visitors_recorded')
     class Meta:
         constraints = [models.CheckConstraint(condition=Q(checked_out_at__isnull=True) | Q(checked_out_at__gte=models.F('checked_in_at')), name='ck_visitor_time_order')]
+
+    def __str__(self):
+        return f'{self.visitor_name} -> {self.student.full_name}'
+
+    @property
+    def duration(self):
+        """Return the visit duration as timedelta, or None if still active."""
+        if not self.checked_in_at or not self.checked_out_at:
+            return None
+        return self.checked_out_at - self.checked_in_at
+
+    @property
+    def is_active(self):
+        """Return True if visitor is currently checked in and not checked out."""
+        return self.checked_out_at is None
 
 
 class LeaveApplication(TimeStampedModel):
