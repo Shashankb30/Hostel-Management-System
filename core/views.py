@@ -34,12 +34,21 @@ def _render_dashboard(request, role, title):
         student = account.student
     except ObjectDoesNotExist:
         student = None
-    return render(request, 'core/dashboard.html', {
+
+    context = {
         'title': title,
         'account': account,
         'student': student,
         'tiles': TILES[role],
-    })
+    }
+
+    if role == UserAccount.ROLE_STUDENT:
+        from notices.services import get_active_notices
+        context['latest_notices'] = get_active_notices(
+            role=role, hostel=account.hostel if account else None
+        )[:5]
+
+    return render(request, 'core/dashboard.html', context)
 
 
 @login_required

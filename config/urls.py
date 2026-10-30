@@ -14,5 +14,6 @@ urlpatterns = [
     path('fees/', include('fees.urls')),
     path('visitors/', include('visitors.urls')),
     path('leave/', include('leave.urls')),
+    path('notices/', include('notices.urls')),
     path('', include('core.urls')),
 ]
