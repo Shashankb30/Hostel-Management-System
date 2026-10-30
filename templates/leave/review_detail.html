@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Review Application {{ application.application_id }} - HMS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-9 col-lg-8">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h1 class="h3 mb-0">Review Leave Application: {{ application.application_id }}</h1>
+        <div class="text-muted">Status: <span class="badge text-bg-{% if application.status == 'approved' %}success{% elif application.status == 'rejected' %}danger{% elif application.status == 'info_requested' %}warning{% else %}primary{% endif %}">{{ application.get_status_display }}</span></div>
+      </div>
+      <a href="{% url 'leave:review' %}" class="btn btn-outline-secondary btn-sm">Back to Applications</a>
+    </div>
+
+    {% if overlaps %}
+      <div class="alert alert-danger mb-3" id="overlap-warning">
+        <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Warning: Overlapping Approved Leave Detected!</h5>
+        <p class="mb-1">This student already has an approved leave application overlapping with the requested dates (IT_27):</p>
+        <ul class="mb-0">
+          {% for o in overlaps %}
+            <li><strong>{{ o.application_id }}</strong>: {{ o.from_date|date:"d M Y" }} to {{ o.to_date|date:"d M Y" }} (Reason: {{ o.reason }})</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-light">
+        <strong>Application Details</strong>
+      </div>
+      <div class="card-body">
+        <div class="row mb-2">
+          <div class="col-sm-4 text-muted">Student Name:</div>
+          <div class="col-sm-8 fw-semibold">{{ application.student.full_name }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-4 text-muted">Roll Number:</div>
+          <div class="col-sm-8">{{ application.student.roll_no }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-4 text-muted">Hostel:</div>
+          <div class="col-sm-8">{{ application.hostel.name }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-4 text-muted">Leave Dates:</div>
+          <div class="col-sm-8 fw-semibold text-primary">
+            {{ application.from_date|date:"d M Y" }} &mdash; {{ application.to_date|date:"d M Y" }}
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-4 text-muted">Destination:</div>
+          <div class="col-sm-8">{{ application.destination|default:'Not specified' }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-4 text-muted">Reason:</div>
+          <div class="col-sm-8">{{ application.reason }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-4 text-muted">Submitted At:</div>
+          <div class="col-sm-8 text-muted small">{{ application.created_at|date:"d M Y, h:i A" }}</div>
+        </div>
+        {% if application.reviewer_remarks %}
+          <div class="row mb-2">
+            <div class="col-sm-4 text-muted">Reviewer Remarks:</div>
+            <div class="col-sm-8 text-danger">{{ application.reviewer_remarks }}</div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if application.status in 'pending,info_requested' %}
+      <div class="card shadow-sm">
+        <div class="card-header bg-light">
+          <strong>Review Decision</strong>
+        </div>
+        <div class="card-body p-4">
+          <form method="post" id="review-form">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label for="{{ form.remarks.id_for_label }}" class="form-label">
+                Remarks <span class="text-muted">(Mandatory for Rejection or Requesting Info)</span>
+              </label>
+              {{ form.remarks }}
+              {% if form.remarks.errors %}
+                <div class="text-danger small mt-1">
+                  {% for error in form.remarks.errors %}{{ error }}{% endfor %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 justify-content-end">
+              <button type="submit" name="action" value="request_info" class="btn btn-outline-warning" id="btn-request-info">
+                Request More Info
+              </button>
+              <button type="submit" name="action" value="reject" class="btn btn-outline-danger" id="btn-reject-leave">
+                Reject Application
+              </button>
+              <button type="submit" name="action" value="approve" class="btn btn-success" id="btn-approve-leave">
+                Approve Application
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
