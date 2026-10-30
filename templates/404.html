@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Page Not Found - HMS{% endblock %}
+{% block content %}
+  <div class="alert alert-secondary" role="alert">
+    <h1 class="h5">Page Not Found (404)</h1>
+    <p class="mb-0">The requested page or record could not be found. Please check the URL or navigation link.</p>
+  </div>
+  {% if user.is_authenticated %}
+    <a href="{% url 'core:home' %}" class="btn btn-outline-primary btn-sm">Return to Dashboard</a>
+  {% else %}
+    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm">Return to Login</a>
+  {% endif %}
+{% endblock %}

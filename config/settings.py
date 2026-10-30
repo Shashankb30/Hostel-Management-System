@@ -79,6 +79,13 @@ SESSION_COOKIE_AGE = HMS_SESSION_TIMEOUT_MINUTES * 60
 SESSION_SAVE_EVERY_REQUEST = True  # every request restarts the idle timer
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
+# NFR-01, NFR-04: Security headers against XSS, clickjacking, and MIME sniffing
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
 
 # FR-01.09: password reset emails. Development prints them in the terminal; set
 # EMAIL_BACKEND and the EMAIL_* variables in .env to send real mail.
