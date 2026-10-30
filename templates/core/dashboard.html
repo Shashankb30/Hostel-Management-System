@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-1">{{ title }}</h1>
+  <p class="text-muted mb-4">
+    Welcome, {{ user.get_full_name|default:user.username }}.
+    {% if account.hostel %}Hostel: {{ account.hostel.name }}.{% endif %}
+    {% if student %}Roll No: {{ student.roll_no }}.{% endif %}
+  </p>
+  {% if latest_notices %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h2 class="h6 mb-0 fw-bold">Latest Notices & Announcements</h2>
+        <a href="{% url 'notices:board' %}" class="btn btn-sm btn-outline-primary">View All Notices</a>
+      </div>
+      <div class="list-group list-group-flush">
+        {% for notice in latest_notices %}
+          <div class="list-group-item py-3">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1 h6 fw-semibold text-primary">{{ notice.title }}</h5>
+              <small class="text-muted">{{ notice.published_at|default:notice.created_at|date:"d M Y, h:i A" }}</small>
+            </div>
+            <p class="mb-1 text-secondary small">{{ notice.body }}</p>
+            {% if notice.hostel %}<small class="badge text-bg-light border">{{ notice.hostel.name }}</small>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="row g-3">
+    {% for tile_title, tile_text in tiles %}
+      <div class="col-12 col-md-6 col-xl-3">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h2 class="h6 card-title">{{ tile_title }}</h2>
+            <p class="card-text text-muted small mb-0">{{ tile_text }}</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}Visitor Management - HMS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Visitor Management</h1>
+  <a href="{% url 'visitors:add' %}" class="btn btn-primary" id="btn-add-visitor">
+    <i class="bi bi-person-plus"></i> Add Visitor
+  </a>
+</div>
+
+{% include 'visitors/_tabs.html' with tab='log' %}
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body py-2">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-12 col-md-5">
+        <label class="form-label mb-1" for="id_q">Search Student or Visitor</label>
+        <input type="text" name="q" id="id_q" class="form-control" placeholder="Search by student name, roll number, or visitor" value="{{ q }}">
+      </div>
+      <div class="col-12 col-md-4">
+        <label class="form-label mb-1" for="id_date">Date</label>
+        <input type="date" name="date" id="id_date" class="form-control" value="{{ selected_date }}">
+      </div>
+      <div class="col-12 col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-outline-primary flex-grow-1" id="btn-search">Search</button>
+        {% if q or selected_date %}
+          <a href="{% url 'visitors:log' %}" class="btn btn-outline-secondary">Reset</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0 bg-white">
+      <thead class="table-light">
+        <tr>
+          <th>Visitor Name</th>
+          <th>ID Proof</th>
+          <th>Student Visited</th>
+          <th>Purpose</th>
+          <th>Check-in Time</th>
+          <th>Check-out Time</th>
+          <th>Duration</th>
+          <th>Status / Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in page %}
+          <tr>
+            <td class="fw-semibold">{{ entry.visitor_name }}
+              {% if entry.visitor_phone %}
+                <div class="text-muted small">{{ entry.visitor_phone }}</div>
+              {% endif %}
+            </td>
+            <td><span class="badge text-bg-light border">{{ entry.id_proof }}</span></td>
+            <td>
+              <a href="{% url 'visitors:student_history' entry.student.id %}" class="text-decoration-none">
+                {{ entry.student.full_name }}
+              </a>
+              <div class="text-muted small">{{ entry.student.roll_no }} &middot; {{ entry.hostel.name }}</div>
+            </td>
+            <td>{{ entry.purpose|default:'-' }}</td>
+            <td>{{ entry.checked_in_at|date:"d M Y, h:i A" }}</td>
+            <td>
+              {% if entry.checked_out_at %}
+                {{ entry.checked_out_at|date:"d M Y, h:i A" }}
+              {% else %}
+                <span class="text-muted">-</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if entry.checked_out_at and entry.duration %}
+                <span class="badge text-bg-secondary">{{ entry.duration }}</span>
+              {% else %}
+                <span class="badge text-bg-success">Active</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if not entry.checked_out_at %}
+                <form method="post" action="{% url 'visitors:checkout' entry.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" id="checkout-btn-{{ entry.id }}">
+                    Check-out
+                  </button>
+                </form>
+              {% else %}
+                <span class="text-muted small">Checked out</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8" class="text-center py-4 text-muted">
+              No visitor entries found.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if page.has_other_pages %}
+  <nav class="mt-3">
+    <ul class="pagination justify-content-center">
+      {% if page.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}">Previous</a></li>
+      {% endif %}
+      <li class="page-item disabled"><span class="page-link">Page {{ page.number }} of {{ page.paginator.num_pages }}</span></li>
+      {% if page.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}">Next</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endif %}
+{% endblock %}

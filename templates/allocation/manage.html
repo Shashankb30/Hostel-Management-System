@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Room Allocation - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">Room Allocation</h1>
+  {% include 'allocation/_tabs.html' with tab='allocate' %}
+
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-12 col-md-8">
+      <label class="form-label" for="student">Student</label>
+      <select class="form-select" id="student" name="student">
+        <option value="">Select a student...</option>
+        {% for s in students %}
+          <option value="{{ s.pk }}"{% if selected and s.pk == selected.pk %} selected{% endif %}>
+            {{ s.roll_no }} - {{ s.full_name }}{% if s.year_of_study %} (year {{ s.year_of_study }}){% endif %}
+            {% if s.current_room %}- Room {{ s.current_room.room_no }}{% else %}- unallocated{% endif %}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12 col-md-4 d-flex align-items-end">
+      <button class="btn btn-primary w-100" type="submit">Show rooms</button>
+    </div>
+  </form>
+
+  {% if selected %}
+    <div class="card mb-3"><div class="card-body">
+      <h2 class="h5">{{ selected.full_name }} <small class="text-muted">{{ selected.roll_no }}</small></h2>
+      <p class="mb-0 text-muted">{{ selected.course|default:"-" }}{% if selected.year_of_study %}, year {{ selected.year_of_study }}{% endif %}</p>
+    </div></div>
+
+    {% if allocation %}
+      <div class="alert alert-info">
+        Currently in room <strong>{{ allocation.room.room_no }}</strong> ({{ allocation.room.hostel.name }})
+        since {{ allocation.allocated_on }}. A student who already has a room must be transferred, not allocated again.
+        {% if roommates %}<br>Roommates: {% for r in roommates %}{{ r.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}.{% endif %}
+      </div>
+      <a class="btn btn-primary" href="{% url 'allocation:transfer' selected.pk %}">Transfer to another room</a>
+      <form method="post" action="{% url 'allocation:vacate' allocation.pk %}" class="d-inline"
+            onsubmit="return confirm('Release room {{ allocation.room.room_no|escapejs }} for {{ selected.full_name|escapejs }}?');">
+        {% csrf_token %}<button class="btn btn-outline-danger" type="submit">Release room</button>
+      </form>
+    {% else %}
+      {% if conflicts %}
+        <div class="alert alert-warning">
+          <strong>Priority flag:</strong> {{ conflicts|length }} higher-priority student{{ conflicts|length|pluralize }}
+          on the waitlist would be left without a bed:
+          {% for c in conflicts %}{{ c.student.full_name }} (year {{ c.student.year_of_study|default:"-" }}){% if not forloop.last %}, {% endif %}{% endfor %}.
+          Allocate them first, or tick "Allocate anyway" to override.
+        </div>
+      {% endif %}
+
+      <h2 class="h5">Suggested vacant rooms</h2>
+      {% if vacant_rooms %}
+        <div class="table-responsive">
+          <table class="table table-sm table-striped align-middle bg-white">
+            <thead><tr><th>Room</th><th>Block</th><th>Type</th><th>Beds</th><th>Vacant</th><th class="text-end">Action</th></tr></thead>
+            <tbody>
+              {% for room in vacant_rooms %}
+                <tr>
+                  <td>{{ room.room_no }}</td><td>{{ room.block|default:"-" }}</td><td>{{ room.room_type|default:"-" }}</td>
+                  <td>{{ room.occupied_beds }} / {{ room.capacity }}</td>
+                  <td><span class="badge text-bg-success">{{ room.free_beds }} vacant</span></td>
+                  <td class="text-end">
+                    <form method="post" action="{% url 'allocation:allocate' %}" class="d-inline-flex align-items-center gap-2">
+                      {% csrf_token %}
+                      <input type="hidden" name="student" value="{{ selected.pk }}">
+                      <input type="hidden" name="room" value="{{ room.pk }}">
+                      {% if conflicts %}
+                        <label class="form-check-label small"><input class="form-check-input" type="checkbox" name="override" value="1"> Allocate anyway</label>
+                      {% endif %}
+                      <button class="btn btn-sm btn-primary" type="submit">Allocate</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="alert alert-warning">No vacant rooms available</div>
+        {% if not waiting %}
+          <form method="post" action="{% url 'allocation:waitlist_add' %}">
+            {% csrf_token %}<input type="hidden" name="student" value="{{ selected.pk }}">
+            <button class="btn btn-outline-primary" type="submit">Add {{ selected.full_name }} to the waitlist</button>
+          </form>
+        {% endif %}
+      {% endif %}
+      {% if waiting %}<p class="text-muted mt-2">{{ selected.full_name }} is on the waitlist (priority {{ priority }}).</p>{% endif %}
+    {% endif %}
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,6 @@
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item"><a class="nav-link{% if tab == 'allocate' %} active{% endif %}" href="{% url 'allocation:manage' %}">Allocate</a></li>
+  <li class="nav-item"><a class="nav-link{% if tab == 'waitlist' %} active{% endif %}" href="{% url 'allocation:waitlist' %}">Waitlist</a></li>
+  <li class="nav-item"><a class="nav-link{% if tab == 'rules' %} active{% endif %}" href="{% url 'allocation:rules' %}">Priority rules</a></li>
+  <li class="nav-item"><a class="nav-link{% if tab == 'report' %} active{% endif %}" href="{% url 'allocation:report' %}">Report</a></li>
+</ul>

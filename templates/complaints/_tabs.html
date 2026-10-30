@@ -1,0 +1,6 @@
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item"><a class="nav-link{% if tab == 'all' %} active{% endif %}" href="{% url 'complaints:manage' %}">All complaints</a></li>
+  <li class="nav-item"><a class="nav-link{% if tab == 'misconduct' %} active{% endif %}" href="{% url 'complaints:log_misconduct' %}">Log misconduct</a></li>
+  <li class="nav-item"><a class="nav-link{% if tab == 'rules' %} active{% endif %}" href="{% url 'complaints:rules' %}">Demerit rules</a></li>
+  <li class="nav-item"><a class="nav-link{% if tab == 'report' %} active{% endif %}" href="{% url 'complaints:report' %}">Summary report</a></li>
+</ul>

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Waitlist - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">Room Allocation</h1>
+  {% include 'allocation/_tabs.html' with tab='waitlist' %}
+
+  <form method="post" action="{% url 'allocation:waitlist_add' %}" class="row g-2 mb-4">
+    {% csrf_token %}
+    <div class="col-12 col-md-5">
+      <select class="form-select" name="student" aria-label="Student" required>
+        <option value="">Add an unallocated student...</option>
+        {% for s in candidates %}<option value="{{ s.pk }}">{{ s.roll_no }} - {{ s.full_name }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-8 col-md-4"><input class="form-control" name="room_type" maxlength="40" placeholder="Preferred room type (optional)"></div>
+    <div class="col-4 col-md-3"><button class="btn btn-primary w-100" type="submit">Add to waitlist</button></div>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle bg-white">
+      <thead><tr><th>#</th><th>Roll no</th><th>Student</th><th>Year</th><th>Priority</th><th>Room type</th><th>Requested</th><th class="text-end">Actions</th></tr></thead>
+      <tbody>
+        {% for r in requests %}
+          <tr>
+            <td>{{ forloop.counter }}</td><td>{{ r.student.roll_no }}</td><td>{{ r.student.full_name }}</td>
+            <td>{{ r.student.year_of_study|default:"-" }}</td><td>{{ r.priority }}</td>
+            <td>{{ r.requested_room_type|default:"-" }}</td><td>{{ r.requested_at|date:"d M Y H:i" }}</td>
+            <td class="text-end">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'allocation:manage' %}?student={{ r.student.pk }}">Allocate</a>
+              <form method="post" action="{% url 'allocation:waitlist_remove' r.pk %}" class="d-inline">{% csrf_token %}
+                <button class="btn btn-sm btn-outline-danger" type="submit">Remove</button></form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="8" class="text-center text-muted py-4">The waitlist is empty.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

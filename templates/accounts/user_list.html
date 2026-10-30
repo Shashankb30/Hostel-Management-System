@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Users & Roles - HMS{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Users &amp; Roles</h1>
+    <a class="btn btn-primary" href="{% url 'accounts:user_create' %}">Add user</a>
+  </div>
+
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-12 col-md-5">
+      <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Search username, name or email">
+    </div>
+    <div class="col-6 col-md-3">
+      <select class="form-select" name="role" aria-label="Role">
+        <option value="">All roles</option>
+        {% for value, label in roles %}<option value="{{ value }}"{% if value == role %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-md-2">
+      <select class="form-select" name="status" aria-label="Status">
+        <option value="">Any status</option>
+        <option value="active"{% if status == 'active' %} selected{% endif %}>Active</option>
+        <option value="inactive"{% if status == 'inactive' %} selected{% endif %}>Inactive</option>
+        <option value="locked"{% if status == 'locked' %} selected{% endif %}>Locked</option>
+      </select>
+    </div>
+    <div class="col-12 col-md-2"><button class="btn btn-outline-secondary w-100" type="submit">Filter</button></div>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle bg-white">
+      <thead>
+        <tr><th>Username</th><th>Name</th><th>Email</th><th>Role</th><th>Hostel</th><th>Status</th><th class="text-end">Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for account in accounts %}
+          <tr>
+            <td>{{ account.user.username }}</td>
+            <td>{{ account.user.get_full_name|default:"-" }}</td>
+            <td>{{ account.user.email|default:"-" }}</td>
+            <td>{{ account.get_role_display }}</td>
+            <td>{{ account.hostel.name|default:"-" }}</td>
+            <td>
+              {% if not account.user.is_active %}<span class="badge text-bg-secondary">Inactive</span>{% endif %}
+              {% if account.is_locked %}<span class="badge text-bg-danger">Locked</span>{% endif %}
+              {% if account.user.is_active and not account.is_locked %}<span class="badge text-bg-success">Active</span>{% endif %}
+            </td>
+            <td class="text-end">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'accounts:user_edit' account.pk %}">Edit</a>
+              {% if account.is_locked %}
+                <form method="post" action="{% url 'accounts:user_unlock' account.pk %}" class="d-inline">{% csrf_token %}
+                  <button class="btn btn-sm btn-outline-warning" type="submit">Unlock</button></form>
+              {% endif %}
+              {% if account.user.is_active %}
+                <form method="post" action="{% url 'accounts:user_deactivate' account.pk %}" class="d-inline"
+                      onsubmit="return confirm('Deactivate {{ account.user.username|escapejs }}? They will not be able to log in.');">{% csrf_token %}
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Deactivate</button></form>
+              {% else %}
+                <form method="post" action="{% url 'accounts:user_reactivate' account.pk %}" class="d-inline">{% csrf_token %}
+                  <button class="btn btn-sm btn-outline-success" type="submit">Reactivate</button></form>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7" class="text-center text-muted py-4">No users match.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

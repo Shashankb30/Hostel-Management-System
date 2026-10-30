@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}My Complaints - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">My Complaints</h1>
+  {% if not student %}
+    <div class="alert alert-info" role="alert">Your student record has not been created yet. Please contact the administrator.</div>
+  {% else %}
+    <div class="row g-3">
+      <div class="col-12 col-lg-5">
+        <div class="card shadow-sm"><div class="card-body">
+          <h2 class="h5">Raise a complaint</h2>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label" for="category">Category</label>
+              <select class="form-select" id="category" name="category">
+                <option value="">Select a category...</option>
+                {% for value, label in categories %}
+                  <option value="{{ value }}"{% if form.category == value %} selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="title">Subject <span class="text-muted">(optional)</span></label>
+              <input class="form-control" id="title" name="title" maxlength="160" value="{{ form.title }}">
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="description">Description</label>
+              <textarea class="form-control" id="description" name="description" rows="5" maxlength="2000">{{ form.description }}</textarea>
+            </div>
+            <button class="btn btn-primary" type="submit">Submit complaint</button>
+          </form>
+        </div></div>
+
+        <div class="card shadow-sm mt-3"><div class="card-body">
+          <h2 class="h5">My demerit points</h2>
+          <p class="display-6 mb-2">{{ demerit_total }}</p>
+          {% if demerits %}
+            <ul class="list-group list-group-flush">
+              {% for d in demerits %}
+                <li class="list-group-item px-0 d-flex justify-content-between">
+                  <span>{{ d.reason }}<br><small class="text-muted">{{ d.awarded_on|date:"j M Y" }}</small></span>
+                  <span class="badge text-bg-danger align-self-start">+{{ d.points }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted mb-0">You have no demerit points.</p>
+          {% endif %}
+        </div></div>
+      </div>
+
+      <div class="col-12 col-lg-7">
+        <h2 class="h5">My complaints</h2>
+        {% if complaints %}
+          <div class="table-responsive">
+            <table class="table table-sm table-striped align-middle bg-white">
+              <thead><tr><th>ID</th><th>Category</th><th>Subject</th><th>Status</th><th>Raised</th><th></th></tr></thead>
+              <tbody>
+                {% for c in complaints %}
+                  <tr>
+                    <td>{{ c.complaint_id }}</td>
+                    <td>{{ c.get_category_display }}</td>
+                    <td>{{ c.title }}</td>
+                    <td>{% include 'complaints/_status_badge.html' %}</td>
+                    <td>{{ c.created_at|date:"j M Y" }}</td>
+                    <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'complaints:detail' c.pk %}">View</a></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info">You have not raised any complaints. Use the form to report a problem.</div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

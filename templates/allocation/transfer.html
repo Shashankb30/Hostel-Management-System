@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Room transfer - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">Room transfer</h1>
+  <p>{{ student.full_name }} ({{ student.roll_no }}) is currently in room <strong>{{ allocation.room.room_no }}</strong>.</p>
+
+  {% if target %}
+    <div class="card border-warning mb-3"><div class="card-body">
+      <h2 class="h5">Confirm transfer</h2>
+      <p>Move <strong>{{ student.full_name }}</strong> from room <strong>{{ allocation.room.room_no }}</strong> to room <strong>{{ target.room_no }}</strong>?
+         The old bed becomes vacant and the student is notified.</p>
+      <form method="post" class="d-inline">{% csrf_token %}
+        <input type="hidden" name="room" value="{{ target.pk }}">
+        <button class="btn btn-primary" type="submit">Confirm transfer</button></form>
+      <a class="btn btn-outline-secondary" href="{% url 'allocation:transfer' student.pk %}">Choose another room</a>
+    </div></div>
+  {% else %}
+    <h2 class="h5">Available rooms</h2>
+    {% if vacant_rooms %}
+      <div class="table-responsive">
+        <table class="table table-sm table-striped align-middle bg-white">
+          <thead><tr><th>Room</th><th>Block</th><th>Type</th><th>Beds</th><th>Vacant</th><th class="text-end">Action</th></tr></thead>
+          <tbody>
+            {% for room in vacant_rooms %}
+              <tr><td>{{ room.room_no }}</td><td>{{ room.block|default:"-" }}</td><td>{{ room.room_type|default:"-" }}</td>
+                <td>{{ room.occupied_beds }} / {{ room.capacity }}</td><td>{{ room.free_beds }} vacant</td>
+                <td class="text-end"><a class="btn btn-sm btn-primary" href="?room={{ room.pk }}">Review transfer</a></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="alert alert-warning">No vacant rooms available</div>
+    {% endif %}
+  {% endif %}
+  <a href="{% url 'allocation:manage' %}?student={{ student.pk }}">Back to allocation</a>
+{% endblock %}

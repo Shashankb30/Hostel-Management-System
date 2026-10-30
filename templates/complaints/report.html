@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Complaint summary - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">Complaints</h1>
+  {% include 'complaints/_tabs.html' with tab='report' %}
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-6 col-md-3"><label class="form-label" for="start">From</label><input class="form-control" type="date" id="start" name="start" value="{{ start }}"></div>
+    <div class="col-6 col-md-3"><label class="form-label" for="end">To</label><input class="form-control" type="date" id="end" name="end" value="{{ end }}"></div>
+    <div class="col-12 col-md-6 d-flex align-items-end gap-2">
+      <button class="btn btn-primary" type="submit">Generate summary</button>
+      <button class="btn btn-outline-secondary" type="submit" name="export" value="csv">Download CSV</button>
+    </div>
+  </form>
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle bg-white" style="max-width: 44rem;">
+      <thead><tr><th>Category</th><th class="text-end">Total</th><th class="text-end">Open</th><th class="text-end">Under Review</th><th class="text-end">Resolved</th></tr></thead>
+      <tbody>
+        {% for row in summary.rows %}
+          <tr><td>{{ row.label }}</td><td class="text-end">{{ row.total }}</td><td class="text-end">{{ row.open }}</td><td class="text-end">{{ row.under_review }}</td><td class="text-end">{{ row.resolved }}</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot><tr class="fw-bold"><td>All categories</td><td class="text-end">{{ summary.totals.total }}</td><td class="text-end">{{ summary.totals.open }}</td><td class="text-end">{{ summary.totals.under_review }}</td><td class="text-end">{{ summary.totals.resolved }}</td></tr></tfoot>
+    </table>
+  </div>
+{% endblock %}

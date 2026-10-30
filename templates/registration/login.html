@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Log in - HMS{% endblock %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-sm-8 col-md-5 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h1 class="h4 mb-3">Log in</h1>
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+              {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+            </div>
+          {% endif %}
+          {# novalidate: blank fields are checked on the server so the messages are the same everywhere #}
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+              {{ form.username }}
+              {% for error in form.username.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+              {{ form.password }}
+              {% for error in form.password.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <input type="hidden" name="next" value="{{ next }}">
+            <button type="submit" class="btn btn-primary w-100">Log in</button>
+          </form>
+          <p class="text-center small mt-3 mb-0"><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

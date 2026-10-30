@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Attendance - HMS{% endblock %}
+{% block content %}
+  <h1 class="h3 mb-3">Attendance</h1>
+  {% include 'attendance/_tabs.html' with tab='daily' %}
+
+  {% if flags %}
+    <div class="alert alert-warning">
+      <strong>{{ flags|length }} check-in{{ flags|length|pluralize }} never closed:</strong>
+      {% for f in flags %}{{ f.student.full_name }} (since {{ f.check_in_at|date:"j M, h:i A" }}){% if not forloop.last %}, {% endif %}{% endfor %}.
+      Check these students out below.
+    </div>
+  {% endif %}
+
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-8 col-md-3">
+      <label class="form-label" for="date">Date</label>
+      <input class="form-control" type="date" id="date" name="date" value="{{ summary.day|date:'Y-m-d' }}">
+    </div>
+    <div class="col-4 col-md-2 d-flex align-items-end"><button class="btn btn-primary" type="submit">Show</button></div>
+  </form>
+
+  <div class="row g-2 mb-3">
+    <div class="col-4 col-md-2"><div class="card shadow-sm"><div class="card-body py-2"><div class="text-muted small">Present</div><div class="h4 mb-0">{{ summary.present }}</div></div></div></div>
+    <div class="col-4 col-md-2"><div class="card shadow-sm"><div class="card-body py-2"><div class="text-muted small">Absent</div><div class="h4 mb-0">{{ summary.absent }}</div></div></div></div>
+    <div class="col-4 col-md-2"><div class="card shadow-sm"><div class="card-body py-2"><div class="text-muted small">Students</div><div class="h4 mb-0">{{ summary.total }}</div></div></div></div>
+  </div>
+
+  {% if summary.rows %}
+    <form method="post" action="{% url 'attendance:bulk' %}" id="bulk-form">
+      {% csrf_token %}
+      <input type="hidden" name="date" value="{{ summary.day|date:'Y-m-d' }}">
+    </form>
+    <div class="card shadow-sm mb-3"><div class="card-body py-2">
+      <div class="row g-2 align-items-end">
+        <div class="col-12 col-md-4">
+          <label class="form-label mb-1" for="when">Time <span class="text-muted">(blank = now)</span></label>
+          <input class="form-control" type="datetime-local" id="when" name="when" form="bulk-form" max="{{ now }}">
+        </div>
+        <div class="col-12 col-md-8 d-flex gap-2">
+          <button class="btn btn-primary" type="submit" name="action" value="check_in" form="bulk-form">Check in selected</button>
+          <button class="btn btn-outline-primary" type="submit" name="action" value="check_out" form="bulk-form">Check out selected</button>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="table-responsive">
+      <table class="table table-sm table-striped align-middle bg-white">
+        <thead><tr>
+          <th style="width: 2rem;"><input class="form-check-input" type="checkbox" id="select-all" aria-label="Select all"></th>
+          <th>Student</th><th>Room</th><th>Status</th><th>Check-in</th><th>Check-out</th><th>Duration</th><th class="text-end">Action</th>
+        </tr></thead>
+        <tbody>
+          {% for row in summary.rows %}
+            <tr>
+              <td><input class="form-check-input row-check" type="checkbox" name="students" value="{{ row.student.pk }}" form="bulk-form" aria-label="Select {{ row.student.full_name }}"></td>
+              <td><a href="{% url 'attendance:student_history' row.student.pk %}">{{ row.student.full_name }}</a><br><small class="text-muted">{{ row.student.roll_no }}</small></td>
+              <td>{{ row.room|default:"-" }}</td>
+              <td>
+                <span class="badge text-bg-{% if row.status == 'absent' %}secondary{% elif row.status == 'inside' %}success{% else %}primary{% endif %}">{{ row.status_label }}</span>
+                {% if row.open_from_earlier %}<br><small class="text-warning">Open since {{ row.open_entry.check_in_at|date:"j M, h:i A" }}</small>{% endif %}
+              </td>
+              <td>{% if row.record %}{{ row.record.check_in_at|date:"h:i A" }}{% else %}-{% endif %}</td>
+              <td>{% if row.record.check_out_at %}{{ row.record.check_out_at|date:"j M, h:i A" }}{% else %}-{% endif %}</td>
+              <td>{{ row.duration|default:"-" }}</td>
+              <td class="text-end">
+                {% if row.can_check_in %}
+                  <form method="post" action="{% url 'attendance:check_in' %}" class="d-inline">{% csrf_token %}
+                    <input type="hidden" name="student" value="{{ row.student.pk }}"><input type="hidden" name="date" value="{{ summary.day|date:'Y-m-d' }}">
+                    <button class="btn btn-sm btn-primary" type="submit">Check in</button></form>
+                {% elif row.can_check_out %}
+                  <form method="post" action="{% url 'attendance:check_out' %}" class="d-inline">{% csrf_token %}
+                    <input type="hidden" name="student" value="{{ row.student.pk }}"><input type="hidden" name="date" value="{{ summary.day|date:'Y-m-d' }}">
+                    <button class="btn btn-sm btn-outline-primary" type="submit">Check out</button></form>
+                {% else %}<span class="text-muted">Done</span>{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-muted small">Check in and Check out use the current time. To record another time, tick the student and use the buttons above.</p>
+    <script>
+      document.getElementById('select-all').addEventListener('change', function () {
+        document.querySelectorAll('.row-check').forEach(function (box) { box.checked = this.checked; }, this);
+      });
+    </script>
+  {% else %}
+    {% url 'allocation:manage' as allocate_url %}
+    <div class="alert alert-info">No students have a room yet. Attendance can only be recorded for students with an allocated room.
+      {% if allocate_url %}<a href="{{ allocate_url }}">Allocate rooms</a>{% endif %}</div>
+  {% endif %}
+{% endblock %}
