@@ -13,5 +13,6 @@ urlpatterns = [
     path('complaints/', include('complaints.urls')),
     path('fees/', include('fees.urls')),
     path('visitors/', include('visitors.urls')),
+    path('leave/', include('leave.urls')),
     path('', include('core.urls')),
 ]

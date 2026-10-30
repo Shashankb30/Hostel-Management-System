@@ -279,18 +279,41 @@ class VisitorLog(TimeStampedModel):
 
 
 class LeaveApplication(TimeStampedModel):
-    STATUS_CHOICES = [('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('cancelled', 'Cancelled')]
+    STATUS_PENDING = 'pending'
+    STATUS_APPROVED = 'approved'
+    STATUS_REJECTED = 'rejected'
+    STATUS_INFO_REQUESTED = 'info_requested'
+    STATUS_CANCELLED = 'cancelled'
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, 'Pending'),
+        (STATUS_APPROVED, 'Approved'),
+        (STATUS_REJECTED, 'Rejected'),
+        (STATUS_INFO_REQUESTED, 'More Info Requested'),
+        (STATUS_CANCELLED, 'Cancelled'),
+    ]
+
     student = models.ForeignKey(Student, on_delete=models.PROTECT, related_name='leave_applications')
     hostel = models.ForeignKey(Hostel, on_delete=models.PROTECT, related_name='leave_applications')
     reason = models.TextField()
     from_date = models.DateField()
     to_date = models.DateField()
     destination = models.CharField(max_length=200, blank=True)
-    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default='pending', db_index=True)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_PENDING, db_index=True)
     reviewed_by = models.ForeignKey(UserAccount, null=True, blank=True, on_delete=models.SET_NULL, related_name='leave_applications_reviewed')
     reviewed_at = models.DateTimeField(null=True, blank=True)
+    reviewer_remarks = models.TextField(blank=True, default='')
+
     class Meta:
         constraints = [models.CheckConstraint(condition=Q(to_date__gte=models.F('from_date')), name='ck_leave_date_order')]
+
+    def __str__(self):
+        return f'{self.application_id}: {self.student.full_name} ({self.status})'
+
+    @property
+    def application_id(self):
+        """The display ID, for example LV-045 or LV00045 (matches Test Plan IT_25_Leave)."""
+        return f'LV-{self.pk:03d}' if self.pk is not None else ''
 
 
 class Notice(TimeStampedModel):

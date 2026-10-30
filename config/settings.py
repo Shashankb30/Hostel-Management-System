@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'complaints.apps.ComplaintsConfig',
     'fees.apps.FeesConfig',
     'visitors.apps.VisitorsConfig',
+    'leave.apps.LeaveConfig',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
