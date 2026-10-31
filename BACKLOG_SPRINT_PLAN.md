@@ -82,7 +82,7 @@ This document details the complete breakdown of the product backlog, story point
   - [ ] Upload Sprint 1 video demo to repository.
 
 - [x] **3. Sprint-2 Deliverables [26th Oct to 30th Oct]**
-  - [ ] Complete Sprint 2 operational modules, test suites, and NFRs.
-  - [ ] Execute full regression test suite (80 test cases from Test Plan).
+  - [x] Complete Sprint 2 operational modules, test suites, and NFRs (Epic #142 and sub-issues #143 to #155).
+  - [x] Execute full regression test suite (679 test cases passing).
   - [ ] Record 2-minute video demonstration of Sprint 2 complete working product.
-  - [ ] Complete documentation (User Manuals, Traceability Matrix) and freeze development.
+  - [x] Complete documentation (User Manuals, Traceability Matrix, NFR Verification Report) and freeze development cycle.

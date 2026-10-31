@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}System Maintenance - HMS{% endblock %}
+{% block content %}
+  <div class="card border-warning my-4">
+    <div class="card-header bg-warning text-dark font-weight-bold">
+      <i class="bi bi-tools"></i> Scheduled Maintenance Notice
+    </div>
+    <div class="card-body">
+      {% if notice %}
+        <h5 class="card-title">{{ notice.title }}</h5>
+        <p class="card-text">{{ notice.content|linebreaks }}</p>
+        <p class="card-text text-muted small">Published: {{ notice.published_at|date:"d M Y, H:i" }}</p>
+      {% else %}
+        <h5 class="card-title">System Under Scheduled Maintenance</h5>
+        <p class="card-text">The Hostel Management System is currently undergoing routine maintenance or a planned update window. Regular operations will resume shortly.</p>
+      {% endif %}
+      <hr>
+      <p class="mb-0 text-muted small">For urgent hostel assistance, please contact the warden office directly.</p>
+    </div>
+  </div>
+  <a href="{% url 'core:home' %}" class="btn btn-outline-secondary btn-sm">Refresh Status</a>
+{% endblock %}
