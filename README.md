@@ -138,4 +138,57 @@ To ensure academic and industry-standard traceability:
   - Sprint 2: 96 items (~314 Story Points)
 - **Workload Balance**: Equitably split 50/50 between `Shashankb30` and `abhijeetcyalgi`.
 
-For detailed sprint schedules, issue mappings, and test cases, refer to [`BACKLOG_SPRINT_PLAN.md`](file:///c:/Users/shank/Documents/Doc/Sem%205/Software%20enginnerr/Hostel%20Manage/Github%20repo/Hostel-Management-System/BACKLOG_SPRINT_PLAN.md).
+For detailed sprint schedules, issue mappings, and test cases, refer to [`BACKLOG_SPRINT_PLAN.md`](./BACKLOG_SPRINT_PLAN.md).
+
+---
+
+## 🛠️ Local Development & Setup Guide
+
+### 1. Prerequisites
+- **Python**: 3.12+ (tested on Python 3.12 and 3.14)
+- **Git**
+- **Virtual Environment tool** (`venv`)
+
+### 2. Installation & Setup
+1. Clone the repository and enter the project folder:
+   ```bash
+   git clone https://github.com/Shashankb30/Hostel-Management-System.git
+   cd Hostel-Management-System
+   ```
+2. Create and activate a Python virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows:
+   .\venv\Scripts\activate
+   # On Linux/macOS:
+   source venv/bin/activate
+   ```
+3. Install required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Apply database migrations:
+   ```bash
+   python manage.py migrate
+   ```
+5. Seed initial mock data (Users, Rooms, Students, Complaints, Notices):
+   ```bash
+   python manage.py seed_data
+   ```
+
+### 3. Running the Test Suite
+Run all unit, integration, and system tests:
+```bash
+python manage.py test
+```
+
+### 4. Running the Development Server
+```bash
+python manage.py runserver
+```
+Navigate to `http://127.0.0.1:8000` in your browser.
+
+### 5. Default Seed User Credentials
+- **Administrator**: `admin01` / `Admin@12`
+- **Warden**: `wdn05` / `Warden@12`
+- **Student**: `stu1023` / `Pass@123`
