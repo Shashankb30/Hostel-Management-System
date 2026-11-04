@@ -24,3 +24,4 @@ Defects must be logged using the GitHub issue template at [`.github/ISSUE_TEMPLA
 2. **Assignment**: Assigned to the module owner (`@Shashankb30` or `@abhijeetcyalgi`).
 3. **Resolution**: Fix implemented on a branch, verified with an automated test case, and merged via PR referencing `Fixes #<issue_number>`.
 4. **Closing**: GitHub Project workflows automatically mark the card as `Done` and close the issue upon PR merge to `main`.
+
