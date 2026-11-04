@@ -43,3 +43,4 @@
 - **CI / CD Pipeline:** Automated workflow runs pytest/Django test suite on pull requests.
 - **Board Automation:** PR references (`Fixes #<issue>`) automatically transition issues to `Done` upon merge.
 - **Test Matrix:** 100% automated test coverage across 80 core test plan specifications.
+
