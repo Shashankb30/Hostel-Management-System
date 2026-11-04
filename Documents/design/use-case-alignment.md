@@ -73,3 +73,4 @@ flowchart LR
 3. **Administrator Boundary:**
    - Administrators manage master student registrations (UC-02), room inventories (UC-03), fee structures, invoices, and payments (UC-05).
    - Administrators receive escalated complaints from wardens (UC-06).
+

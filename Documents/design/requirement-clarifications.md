@@ -46,3 +46,4 @@ This specification records all official decisions clarifying previously ambiguou
   2. `STUDENTS`: Registered student residents only.
   3. `WARDENS`: Wardens and administrative staff.
   4. Specific Hostel Block/Wing: Residents assigned to designated hostel blocks.
+
