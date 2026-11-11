@@ -77,7 +77,7 @@ This document details the complete breakdown of the product backlog, story point
 - [x] **2. Sprint-1 Deliverables [19th Oct to 23rd Oct]**
   - [x] GitHub Actions enabled for automated PR checks, commit CI, and issue linking.
   - [x] PR template and Issue templates created to enforce DoD and traceability.
-  - [ ] Complete Sprint 1 feature implementation via traceable PRs.
+  - [x] Complete Sprint 1 feature implementation via traceable PRs (FR-01 to FR-05 merged via PR #185-#195).
   - [ ] Record 1-minute video demonstration of Sprint 1 working product.
   - [ ] Upload Sprint 1 video demo to repository.
 
