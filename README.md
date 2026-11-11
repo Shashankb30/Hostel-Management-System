@@ -138,4 +138,24 @@ To ensure academic and industry-standard traceability:
   - Sprint 2: 96 items (~314 Story Points)
 - **Workload Balance**: Equitably split 50/50 between `Shashankb30` and `abhijeetcyalgi`.
 
-For detailed sprint schedules, issue mappings, and test cases, refer to [`BACKLOG_SPRINT_PLAN.md`](file:///c:/Users/shank/Documents/Doc/Sem%205/Software%20enginnerr/Hostel%20Manage/Github%20repo/Hostel-Management-System/BACKLOG_SPRINT_PLAN.md).
+For detailed sprint schedules, issue mappings, and test cases, refer to [`BACKLOG_SPRINT_PLAN.md`](BACKLOG_SPRINT_PLAN.md).
+
+---
+
+## 📚 Project Engineering Documentation
+
+The project includes complete Software Engineering documentation developed strictly according to course specifications and industry best practices:
+
+| Document | Description | Format / Path |
+| :--- | :--- | :--- |
+| **Software Requirements Specification (SRS)** | Detailed functional requirements (FR-01 to FR-10), NFRs, security objectives, use cases, and RTM | [`Documents/SRS_Document.md`](Documents/SRS_Document.md) |
+| **Software Architecture Document (SAD)** | System component architecture, STRIDE threat model, UML sequence diagrams, and REST/Component API design | [`Documents/Software_Architecture_Document.md`](Documents/Software_Architecture_Document.md) |
+| **Software Test Plan (STP)** | Test strategy, scope, environment, deliverables, suspension criteria, security validation, and metrics | [`Documents/Test_Plan_Document.md`](Documents/Test_Plan_Document.md) |
+| **Test Plan Execution Matrix** | 127 detailed test cases across Unit, Integration, System, and NFR levels with execution logs | [`TEST_PLAN_MATRIX.md`](TEST_PLAN_MATRIX.md) |
+| **Backlog & Sprint Plan** | Two-sprint plan covering 180 backlog items, story points, and DoD verification checklists | [`BACKLOG_SPRINT_PLAN.md`](BACKLOG_SPRINT_PLAN.md) |
+| **NFR Hardening Report** | Comprehensive architecture verification for Security, Performance, Integrity, and Availability | [`Documents/design/nfr-hardening-report.md`](Documents/design/nfr-hardening-report.md) |
+| **Performance Baseline Report** | Latency benchmark report verifying all 19 endpoints respond in < 3.0s (average 13-29ms) | [`Documents/process/performance-baseline.md`](Documents/process/performance-baseline.md) |
+| **Usability Review Report** | User experience review covering navigation, forms, error messaging, and mobile accessibility | [`Documents/process/usability-review.md`](Documents/process/usability-review.md) |
+| **Backup & Restore SOP** | Operational procedure for timestamped JSON/SQLite snapshots and disaster recovery | [`Documents/process/backup-and-restore.md`](Documents/process/backup-and-restore.md) |
+| **Architecture Decision Record (ADR 0001)** | Decision log on technology stack, modular monolith pattern, and architectural trade-offs | [`Documents/adr/0001-tech-stack.md`](Documents/adr/0001-tech-stack.md) |
+
