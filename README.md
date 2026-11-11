@@ -158,4 +158,6 @@ The project includes complete Software Engineering documentation developed stric
 | **Usability Review Report** | User experience review covering navigation, forms, error messaging, and mobile accessibility | [`Documents/process/usability-review.md`](Documents/process/usability-review.md) |
 | **Backup & Restore SOP** | Operational procedure for timestamped JSON/SQLite snapshots and disaster recovery | [`Documents/process/backup-and-restore.md`](Documents/process/backup-and-restore.md) |
 | **Architecture Decision Record (ADR 0001)** | Decision log on technology stack, modular monolith pattern, and architectural trade-offs | [`Documents/adr/0001-tech-stack.md`](Documents/adr/0001-tech-stack.md) |
-
+| **Student User Manual** | Resident guide for profile, room status, fee receipts, complaints, and leave applications | [Documents/user-manual-student.md](Documents/user-manual-student.md) |
+| **Warden User Manual** | Operational manual for room allocation, attendance marking, discipline, and visitors | [Documents/user-manual-warden.md](Documents/user-manual-warden.md) |
+| **Administrator User Manual** | Guide for user management, student registration, fees, backups, and health checks | [Documents/user-manual-admin.md](Documents/user-manual-admin.md) |
