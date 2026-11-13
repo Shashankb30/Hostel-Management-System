@@ -7,3 +7,5 @@ staticfiles/
 media/
 .pytest_cache/
 backups/
+.coverage
+htmlcov/

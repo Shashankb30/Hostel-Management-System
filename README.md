@@ -161,3 +161,60 @@ The project includes complete Software Engineering documentation developed stric
 | **Student User Manual** | Resident guide for profile, room status, fee receipts, complaints, and leave applications | [Documents/user-manual-student.md](Documents/user-manual-student.md) |
 | **Warden User Manual** | Operational manual for room allocation, attendance marking, discipline, and visitors | [Documents/user-manual-warden.md](Documents/user-manual-warden.md) |
 | **Administrator User Manual** | Guide for user management, student registration, fees, backups, and health checks | [Documents/user-manual-admin.md](Documents/user-manual-admin.md) |
+
+---
+
+For detailed sprint schedules, issue mappings, and test cases, refer to [`BACKLOG_SPRINT_PLAN.md`](./BACKLOG_SPRINT_PLAN.md).
+
+---
+
+## 🛠️ Local Development & Setup Guide
+
+### 1. Prerequisites
+- **Python**: 3.12+ (tested on Python 3.12 and 3.14)
+- **Git**
+- **Virtual Environment tool** (`venv`)
+
+### 2. Installation & Setup
+1. Clone the repository and enter the project folder:
+   ```bash
+   git clone https://github.com/Shashankb30/Hostel-Management-System.git
+   cd Hostel-Management-System
+   ```
+2. Create and activate a Python virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows:
+   .\venv\Scripts\activate
+   # On Linux/macOS:
+   source venv/bin/activate
+   ```
+3. Install required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Apply database migrations:
+   ```bash
+   python manage.py migrate
+   ```
+5. Seed initial mock data (Users, Rooms, Students, Complaints, Notices):
+   ```bash
+   python manage.py seed_data
+   ```
+
+### 3. Running the Test Suite
+Run all unit, integration, and system tests:
+```bash
+python manage.py test
+```
+
+### 4. Running the Development Server
+```bash
+python manage.py runserver
+```
+Navigate to `http://127.0.0.1:8000` in your browser.
+
+### 5. Default Seed User Credentials
+- **Administrator**: `admin01` / `Admin@12`
+- **Warden**: `wdn05` / `Warden@12`
+- **Student**: `stu1023` / `Pass@123`

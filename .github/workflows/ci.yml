@@ -53,5 +53,18 @@ jobs:
       - name: Apply migrations to an empty database
         run: python manage.py migrate --noinput
 
-      - name: Run tests
-        run: python manage.py test --verbosity 2
+      - name: Run tests with statement + branch coverage
+        run: |
+          coverage run --branch --source=. manage.py test --verbosity 2
+          coverage report --skip-empty --show-missing --fail-under=85
+          coverage xml -o coverage.xml
+          coverage html -d htmlcov
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            coverage.xml
+            htmlcov/

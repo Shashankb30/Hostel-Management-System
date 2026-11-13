@@ -1,0 +1,84 @@
+Name                                             Stmts   Miss Branch BrPart  Cover   Missing
+--------------------------------------------------------------------------------------------
+accounts/apps.py                                     5      0      0      0   100%
+accounts/auth_urls.py                                4      0      0      0   100%
+accounts/forms.py                                   36      0      6      0   100%
+accounts/lockout.py                                 24      0      4      0   100%
+accounts/management/commands/unlock_account.py      15      0      0      0   100%
+accounts/middleware.py                               9      0      2      0   100%
+accounts/services.py                                47      0     14      0   100%
+accounts/urls.py                                     4      0      0      0   100%
+accounts/user_forms.py                              63      0     10      0   100%
+accounts/user_service.py                            36      1      4      1    95%   35
+accounts/user_views.py                              71      5     14      3    91%   32, 36, 68-69, 73
+accounts/views.py                                   47      1      6      2    94%   34, 67->69
+allocation/apps.py                                   5      0      0      0   100%
+allocation/forms.py                                 10      0      0      0   100%
+allocation/services.py                             141      2     48      3    97%   73, 91->93, 266
+allocation/urls.py                                   4      0      0      0   100%
+allocation/views.py                                158      6     32      3    95%   102->108, 111-113, 132-133, 173, 204->206
+attendance/apps.py                                   5      0      0      0   100%
+attendance/services.py                             142      1     52      0    99%   103
+attendance/templatetags/attendance_tags.py           9      0      2      0   100%
+attendance/urls.py                                   4      0      0      0   100%
+attendance/views.py                                120      0     18      1    99%   111->113
+complaints/apps.py                                   5      0      0      0   100%
+complaints/services.py                             261      2     92      2    99%   184, 291
+complaints/urls.py                                   4      0      0      0   100%
+complaints/views.py                                163     11     32      4    91%   70, 91, 100-103, 107, 144->146, 191-192, 204-205
+config/settings.py                                  43      0      0      0   100%
+config/urls.py                                       8      0      0      0   100%
+core/admin.py                                        4      0      2      0   100%
+core/apps.py                                         5      0      0      0   100%
+core/context_processors.py                           7      0      2      0   100%
+core/error_messages.py                              13      0      2      0   100%
+core/feedback.py                                     4      0      2      0   100%
+core/forms.py                                       15      0      6      2    90%   7->exit, 26->exit
+core/management/commands/backup_database.py         36     12      6      1    60%   33-46
+core/management/commands/restore_database.py        32     10     10      4    62%   25, 28, 31-39, 50
+core/management/commands/seed_data.py               15      0      4      0   100%
+core/models.py                                     259      4     28      7    96%   32->exit, 73->exit, 118->exit, 195->exit, 212->exit, 237->exit, 266, 272, 311, 357
+core/navigation.py                                  17      0      2      0   100%
+core/notifications.py                               48      0     14      0   100%
+core/roles.py                                       27      0      6      0   100%
+core/seed.py                                        44      0      8      0   100%
+core/urls.py                                         4      0      0      0   100%
+core/validators.py                                 106      1     44      1    99%   125
+core/views.py                                       67      7      8      2    88%   89-91, 102, 115, 125, 140
+fees/apps.py                                         5      0      0      0   100%
+fees/factories.py                                   26      0      2      1    96%   43->45
+fees/forms.py                                       49      0     10      1    98%   79->81
+fees/services.py                                   145      4     40      0    98%   123-124, 139-140
+fees/templatetags/fees_extras.py                     6      0      0      0   100%
+fees/urls.py                                         4      0      0      0   100%
+fees/views.py                                      118      0     22      0   100%
+leave/apps.py                                        4      0      0      0   100%
+leave/forms.py                                      42      3      6      2    90%   43, 86-87
+leave/services.py                                   98     21     46     15    72%   24, 31, 33, 67, 91, 111, 114, 133, 136, 138, 139->144, 142, 144->147, 148, 157-164, 187-188
+leave/urls.py                                        4      0      0      0   100%
+leave/views.py                                     125     35     30      6    67%   26, 68-69, 74, 85-111, 122-132, 148-149, 172->174, 181->202, 192-196
+notices/apps.py                                      4      0      0      0   100%
+notices/forms.py                                    25      2      4      2    86%   50, 56
+notices/services.py                                 82     11     44     11    81%   24-28, 42, 62->68, 65, 68->74, 71, 75->78, 79, 82, 86, 141
+notices/urls.py                                      4      0      0      0   100%
+notices/views.py                                   105     23     22      7    73%   44, 46, 106-107, 112, 128, 143-144, 149-154, 165-176, 187->189
+rooms/apps.py                                        5      0      0      0   100%
+rooms/forms.py                                      43      0      8      0   100%
+rooms/selectors.py                                  37      0      8      0   100%
+rooms/services.py                                   25      0      8      0   100%
+rooms/urls.py                                        4      0      0      0   100%
+rooms/views.py                                      84      2      6      0    98%   80-81
+students/apps.py                                     5      0      0      0   100%
+students/forms.py                                   31      0      0      0   100%
+students/services.py                                38      0      4      0   100%
+students/urls.py                                     4      0      0      0   100%
+students/views.py                                   33      0      2      0   100%
+visitors/apps.py                                     4      0      0      0   100%
+visitors/forms.py                                   44      4     10      4    85%   57, 63, 69, 105
+visitors/services.py                                73      7     34      8    86%   22, 25, 40, 42, 83-84, 115, 117->119, 119->122
+visitors/urls.py                                     4      0      0      0   100%
+visitors/views.py                                  118      8     24      6    90%   79-80, 88-91, 108->110, 122, 136->140, 187->191, 193
+--------------------------------------------------------------------------------------------
+TOTAL                                             3544    183    810     99    93%
+
+21 empty files skipped.
